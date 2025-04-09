@@ -1,6 +1,6 @@
 #include <iostream> //Console output
-#include "binary_reader.h" //BinaryReader
-#include "gbc_binary.h" //GBCBinary
+#include "util/binary_reader.h" //BinaryReader
+#include "memory/gbc_binary.h" //GBCBinary
 
 int main(int argc, char* argv[]){
     if(argc > 1){

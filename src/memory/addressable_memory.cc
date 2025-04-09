@@ -1,5 +1,5 @@
 #include "addressable_memory.h"
-#include "util.h"
+#include "../util/util.h"
 #include <stdexcept> //std::out_of_range
 #include <cstring> //std::memcpy
 

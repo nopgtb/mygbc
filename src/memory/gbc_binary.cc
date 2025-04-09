@@ -1,5 +1,5 @@
 #include "gbc_binary.h" //GBCBinary
-#include "util.h" //Util
+#include "../util/util.h" //Util
 #include <algorithm> //std::equal
 #include <stdexcept> //std::out_of_range
 #include <cstring> //std::memcpy
