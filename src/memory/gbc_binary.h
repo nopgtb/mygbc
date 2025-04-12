@@ -30,7 +30,7 @@ class GBCBinary: public AddressableMemory{
         };
 
         ///@brief Static function that parses the given byte buffer as a GBCBinary.
-        ///@details Extracts header data and validates the nintendo logo from the given byte array. Returns info in the form of GBCBinary object.
+        ///@details Extracts header data and validates the logo from the given byte array. Returns info in the form of GBCBinary object.
         ///@param byte_buffer std::vector buffer containing the binary bytes.
         ///@return Parsed GBCBinary ready to be used.
         ///@throw std::out_of_range If given array is too small to be valid GBCBinary.
@@ -53,10 +53,15 @@ class GBCBinary: public AddressableMemory{
         ///@return headerdata available for the binary (see struct `gbc_binary_headerdata`).
         const GBCBinary::gbc_binary_headerdata& get_header_data() const;
 
-        ///@brief Does the binary have a valid nintendo logo?
-        ///@details Does the 0x104 => 0x133 segtion represent a valid nintendo logo?
-        ///@return Is the nintendo logo valid?
-        const bool& is_valid_nintendo_logo() const;
+        ///@brief Does the binary have a valid logo?
+        ///@details Does the 0x104 => 0x133 section represent a valid logo?
+        ///@return Is the logo valid?
+        const bool& has_valid_logo() const;
+
+        ///@brief Does the binary have a valid header?
+        ///@details Does the 0x134 => 0x14C section match the checksum at 0x14D?
+        ///@return Is the header valid?
+        const bool& has_valid_header() const;
 
         ///@brief Gets the logo status and header data as a string representation.
         ///@brief Gets the logo status and header data as a string representation. Does not include byte contents of binary.
@@ -64,19 +69,19 @@ class GBCBinary: public AddressableMemory{
         std::string to_string() const;
     private:
 
-        ///@brief Checks if the nintendo logo is correct in byte_buffer.
-        ///@details Checks wheter the bytes 0x104=>0x133 are a valid nintendo logo.
+        ///@brief Checks if the logo is correct in byte_buffer.
+        ///@details Checks wheter the bytes 0x104=>0x133 are a valid logo.
         ///@param byte_buffer std::vector buffer containing the binary bytes.
-        ///@return Were the bytes 0x104=>0x133 present and presented a valid nintendo logo?
+        ///@return Were the bytes 0x104=>0x133 present and presented a valid logo?
         ///@throw std::out_of_range If given array is too small to contain logo.
-        static bool valid_nintendo_logo(const std::vector<uint8_t>& byte_buffer);
+        static bool check_logo_validity(const std::vector<uint8_t>& byte_buffer);
 
         ///@brief Checks if the header checksum is correct in byte_buffer.
         ///@details Checks wheter the header bytes 0x134=>0x14C are a valid using the checksum at 0x14D.
         ///@param byte_buffer std::vector buffer containing the binary bytes.
         ///@return Checks wheter the header bytes 0x134=>0x14C are a valid using the checksum at 0x14D.
         ///@throw std::out_of_range If given array is too small to contain header.
-        static bool valid_header_checksum(const std::vector<uint8_t>& byte_buffer);
+        static bool check_header_checksum_validity(const std::vector<uint8_t>& byte_buffer);
 
         ///@brief Extracts binary headerdata.
         ///@details Extracts all the binary headerdata available.
@@ -89,10 +94,10 @@ class GBCBinary: public AddressableMemory{
         GBCBinary::gbc_binary_headerdata binary_header_data_;
 
         //Was header validated succesfull using the checksum?
-        bool header_is_valid_;
+        bool has_valid_header_;
 
-        //Is the nintendo logo valid (0x104 => 0x133)
-        bool has_valid_nintendo_logo_;
+        //Is the logo valid (0x104 => 0x133)
+        bool has_valid_logo_;
 };
 
 #endif

@@ -8,26 +8,26 @@
 #include <map> //std::map
 
 ///@brief Static function that parses the given byte buffer as a GBCBinary.
-///@details Extracts header data and validates the nintendo logo from the given byte array. Returns info in the form of GBCBinary object.
+///@details Extracts header data and validates the logo from the given byte array. Returns info in the form of GBCBinary object.
 ///@param byte_buffer std::vector buffer containing the binary bytes.
 ///@return Parsed GBCBinary ready to be used.
 ///@throw std::out_of_range If given array is too small to be valid GBCBinary.
 GBCBinary GBCBinary::parse_bytes(const std::vector<unsigned char>& byte_buffer){
     return GBCBinary(
         GBCBinary::extract_header_data(byte_buffer),
-        GBCBinary::valid_nintendo_logo(byte_buffer),
-        GBCBinary::valid_header_checksum(byte_buffer),
+        GBCBinary::check_logo_validity(byte_buffer),
+        GBCBinary::check_header_checksum_validity(byte_buffer),
         byte_buffer
     );
 }
 
-///@brief Checks if the nintendo logo is correct in byte_buffer.
-///@details Checks wheter the bytes 0x104=>0x133 are a valid nintendo logo.
+///@brief Checks if the logo is correct in byte_buffer.
+///@details Checks wheter the bytes 0x104=>0x133 are a valid logo.
 ///@param byte_buffer std::vector buffer containing the binary bytes.
-///@return Were the bytes 0x104=>0x133 present and presented a valid nintendo logo?
+///@return Were the bytes 0x104=>0x133 present and presented a valid logo?
 ///@throw std::out_of_range If given array is too small to contain logo.
-bool GBCBinary::valid_nintendo_logo(const std::vector<uint8_t>& byte_buffer){
-    const std::vector<uint8_t> nintendo_logo_bytes = {
+bool GBCBinary::check_logo_validity(const std::vector<uint8_t>& byte_buffer){
+    const std::vector<uint8_t> logo_bytes = {
         0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B, 0x03,
         0x73, 0x00, 0x83, 0x00, 0x0C, 0x00, 0x0D, 0x00, 0x08,
         0x11, 0x1F, 0x88, 0x89, 0x00, 0x0E, 0xDC, 0xCC, 0x6E,
@@ -35,15 +35,15 @@ bool GBCBinary::valid_nintendo_logo(const std::vector<uint8_t>& byte_buffer){
         0x6E, 0x0E, 0xEC, 0xCC, 0xDD, 0xDC, 0x99, 0x9F, 0xBB, 
         0xB9, 0x33, 0x3E
     };
-    //Nintendo logo located at range 0x104 => 0x133
+    //logo located at range 0x104 => 0x133
     const uint16_t logo_start_addr = 0x104;
-    const uint16_t logo_end_addr = 0x133;
+    const uint16_t logo_end_addr = 0x134; //Exclusive in std::equal
     if(byte_buffer.size() >= logo_end_addr){
         if (
             std::equal(
                 (byte_buffer.begin() + logo_start_addr), 
                 (byte_buffer.begin() + logo_end_addr),
-                nintendo_logo_bytes.begin()
+                logo_bytes.begin()
             )
         ){
             return true;
@@ -59,7 +59,7 @@ bool GBCBinary::valid_nintendo_logo(const std::vector<uint8_t>& byte_buffer){
 ///@param byte_buffer std::vector buffer containing the binary bytes.
 ///@return Checks wheter the header bytes 0x134=>0x14C are a valid using the checksum at 0x14D.
 ///@throw std::out_of_range If given array is too small to contain header.
-bool GBCBinary::valid_header_checksum(const std::vector<uint8_t>& byte_buffer){
+bool GBCBinary::check_header_checksum_validity(const std::vector<uint8_t>& byte_buffer){
     const uint16_t header_end_addr = 0x14F;
     if(byte_buffer.size() >= header_end_addr){
         //From wiki: x=0:FOR i=0134h TO 014C h:x=x-MEM[i]-1:NEXT
@@ -141,7 +141,7 @@ GBCBinary::gbc_binary_headerdata GBCBinary::extract_header_data(const std::vecto
 
 ///@brief Initializes empty GBCBinary.
 ///@details Initializes empty GBCBinary.
-GBCBinary::GBCBinary():AddressableMemory(), binary_header_data_(), header_is_valid_(false), has_valid_nintendo_logo_(false){
+GBCBinary::GBCBinary():AddressableMemory(), binary_header_data_(), has_valid_header_(false), has_valid_logo_(false){
 }
 
 ///@brief Initializes GBCBinary with values.
@@ -151,7 +151,7 @@ GBCBinary::GBCBinary():AddressableMemory(), binary_header_data_(), header_is_val
 ///@param byte_buffer Bytes of the binary.
 ///@details Initializes GBCBinary with values.
 GBCBinary::GBCBinary(const GBCBinary::gbc_binary_headerdata& header, const bool valid_logo, const bool valid_header, const std::vector<uint8_t>& byte_buffer)
-:AddressableMemory(byte_buffer, false), binary_header_data_(header), header_is_valid_(valid_header), has_valid_nintendo_logo_(valid_logo)
+:AddressableMemory(byte_buffer, false), binary_header_data_(header), has_valid_header_(valid_header), has_valid_logo_(valid_logo)
 {
 }
 
@@ -162,11 +162,18 @@ const GBCBinary::gbc_binary_headerdata& GBCBinary::get_header_data() const{
     return binary_header_data_;
 }
 
-///@brief Does the binary have a valid nintendo logo?
-///@details Does the 0x104 => 0x133 segtion represent a valid nintendo logo?
-///@return Is the nintendo logo valid?
-const bool& GBCBinary::is_valid_nintendo_logo() const{
-    return has_valid_nintendo_logo_;
+///@brief Does the binary have a valid logo?
+///@details Does the 0x104 => 0x133 section represent a valid logo?
+///@return Is the logo valid?
+const bool& GBCBinary::has_valid_logo() const{
+    return has_valid_logo_;
+}
+
+///@brief Does the binary have a valid header?
+///@details Does the 0x134 => 0x14C section match the checksum at 0x14D?
+///@return Is the header valid?
+const bool& GBCBinary::has_valid_header() const{
+    return has_valid_header_;
 }
 
 ///@brief Gets the logo status and header data as a string representation.
@@ -175,8 +182,8 @@ const bool& GBCBinary::is_valid_nintendo_logo() const{
 std::string GBCBinary::to_string() const{
     std::ostringstream str_builder;
     str_builder << "Binary size in bytes: " << get_memory().size() << "\n";
-    str_builder << "Logo status: " << (has_valid_nintendo_logo_ ? "valid" : "not valid") << "\n";
-    str_builder << "Header status: " << (header_is_valid_ ? "valid" : "not valid") << "\n";
+    str_builder << "Logo status: " << (has_valid_logo_ ? "valid" : "not valid") << "\n";
+    str_builder << "Header status: " << (has_valid_header_ ? "valid" : "not valid") << "\n";
     str_builder << "Binary title: " << binary_header_data_.title << "\n";
     str_builder << std::hex;
     //Cast to int, uint8_t might be treated as a char otherwise
