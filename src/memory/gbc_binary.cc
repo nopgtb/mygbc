@@ -7,6 +7,37 @@
 #include <iomanip> //std::hex, std::setw, std::setfill
 #include <map> //std::map
 
+///@brief Empty intializer
+///@details Initializes empty data structure
+GBCBinary::GBCBinaryHeaderData::GBCBinaryHeaderData()
+:title(""), gameboy_type(0), licencee_new(0), sgb_compatability(0), cartridge_type(0), rom_size(0), 
+ram_size(0), japanese_code(0), licencee_old(0), mask_rom_version(0), header_checksum(0), global_checksum(0)
+{
+}
+
+/// @brief Value initializer
+/// @param t title
+/// @param g_type gameboy_type
+/// @param licencee_n licencee_new
+/// @param sgb_comp super gameboy compatability 
+/// @param cart_type cartridge type
+/// @param rom_s rom size
+/// @param ram_s ram size
+/// @param jap_code japanese code
+/// @param licencee_o licencee old
+/// @param rom_ver_mask rom version mask
+/// @param head_check header checksum
+/// @param glob_check global checksum
+GBCBinary::GBCBinaryHeaderData::GBCBinaryHeaderData(
+    const std::string & t, uint8_t g_type, uint8_t licencee_n, uint8_t sgb_comp,
+    uint8_t cart_type, uint8_t rom_s, uint8_t ram_s, uint8_t jap_code, uint8_t licencee_o,
+    uint8_t rom_ver_mask, uint8_t head_check, uint16_t glob_check
+)
+:title(t), gameboy_type(g_type), licencee_new(licencee_n), sgb_compatability(sgb_comp), cartridge_type(cart_type), rom_size(rom_s), 
+ram_size(ram_s), japanese_code(jap_code), licencee_old(licencee_o), mask_rom_version(rom_ver_mask), header_checksum(head_check), global_checksum(glob_check)
+{
+}
+
 ///@brief Static function that parses the given byte buffer as a GBCBinary.
 ///@details Extracts header data and validates the logo from the given byte array. Returns info in the form of GBCBinary object.
 ///@param byte_buffer std::vector buffer containing the binary bytes.
@@ -84,10 +115,10 @@ bool GBCBinary::check_header_checksum_validity(const std::vector<uint8_t>& byte_
 ///@param byte_buffer std::vector buffer containing the binary bytes.
 ///@return headerdata available at 0x134 to 0x14F
 ///@throw std::out_of_range If given array is too small to contain header data.
-GBCBinary::gbc_binary_headerdata GBCBinary::extract_header_data(const std::vector<uint8_t>& byte_buffer){
+GBCBinary::GBCBinaryHeaderData GBCBinary::extract_header_data(const std::vector<uint8_t>& byte_buffer){
     const uint16_t header_end_addr = 0x14F;
     if(byte_buffer.size() >= header_end_addr){
-        GBCBinary::gbc_binary_headerdata header_data;
+        GBCBinary::GBCBinaryHeaderData header_data;
         const uint16_t header_title_start_addr = 0x134;
         const uint16_t header_title_end_addr = 0x142;
         const std::map<std::string, uint16_t> header_flag_addr = {
@@ -101,8 +132,8 @@ GBCBinary::gbc_binary_headerdata GBCBinary::extract_header_data(const std::vecto
             {"japanese_code", 0x14A}, //japanese_code, 1 byte
             {"licencee_old", 0x14B}, //licencee_old, 1 byte
             {"mask_rom_version", 0x14C}, //mask_rom_version, 1 byte
-            {"complement_check", 0x14D}, //complement_check, 1 byte
-            {"checksum", 0x14E}, //checksum, 2 bytes
+            {"header_checksum", 0x14D}, //header_checksum, 1 byte
+            {"global_checksum", 0x14E}, //global_checksum, 2 bytes
         };
         //Handle title as complex data type std::string
         header_data.title = std::string(
@@ -130,9 +161,9 @@ GBCBinary::gbc_binary_headerdata GBCBinary::extract_header_data(const std::vecto
         header_data.japanese_code = byte_buffer[header_flag_addr.at("japanese_code")];
         header_data.licencee_old = byte_buffer[header_flag_addr.at("licencee_old")];
         header_data.mask_rom_version = byte_buffer[header_flag_addr.at("mask_rom_version")];
-        header_data.complement_check = byte_buffer[header_flag_addr.at("complement_check")];
-        std::memcpy(&header_data.checksum, &byte_buffer[header_flag_addr.at("checksum")], sizeof(uint16_t));
-        header_data.checksum = Util::nthos16_t(header_data.checksum);
+        header_data.header_checksum = byte_buffer[header_flag_addr.at("header_checksum")];
+        std::memcpy(&header_data.global_checksum, &byte_buffer[header_flag_addr.at("global_checksum")], sizeof(uint16_t));
+        header_data.global_checksum = Util::nthos16_t(header_data.global_checksum);
         return header_data;
     }
     //Not valid GBC binary
@@ -150,15 +181,15 @@ GBCBinary::GBCBinary():AddressableMemory(), binary_header_data_(), has_valid_hea
 ///@param valid_header Was header validated succesfull using the checksum?
 ///@param byte_buffer Bytes of the binary.
 ///@details Initializes GBCBinary with values.
-GBCBinary::GBCBinary(const GBCBinary::gbc_binary_headerdata& header, const bool valid_logo, const bool valid_header, const std::vector<uint8_t>& byte_buffer)
+GBCBinary::GBCBinary(const GBCBinary::GBCBinaryHeaderData& header, const bool valid_logo, const bool valid_header, const std::vector<uint8_t>& byte_buffer)
 :AddressableMemory(byte_buffer, false), binary_header_data_(header), has_valid_header_(valid_header), has_valid_logo_(valid_logo)
 {
 }
 
-///@brief Getter for the binary headerdata variable (see struct `gbc_binary_headerdata`).
+///@brief Getter for the binary headerdata variable (see struct `GBCBinaryHeaderData`).
 ///@details Returns the headerdata available for the binary.
-///@return headerdata available for the binary (see struct `gbc_binary_headerdata`).
-const GBCBinary::gbc_binary_headerdata& GBCBinary::get_header_data() const{
+///@return headerdata available for the binary (see struct `GBCBinaryHeaderData`).
+const GBCBinary::GBCBinaryHeaderData& GBCBinary::get_header_data() const{
     return binary_header_data_;
 }
 
@@ -196,7 +227,7 @@ std::string GBCBinary::to_string() const{
     str_builder << "Binary japanese code: " << std::setw(2) << std::setfill('0') << static_cast<int>(binary_header_data_.japanese_code) << "\n";
     str_builder << "Binary licencee old: " << std::setw(2) << std::setfill('0') << static_cast<int>(binary_header_data_.licencee_old) << "\n";
     str_builder << "Binary mask rom version: " << std::setw(2) << std::setfill('0') << static_cast<int>(binary_header_data_.mask_rom_version) << "\n";
-    str_builder << "Binary complement check: " << std::setw(2) << std::setfill('0') << static_cast<int>(binary_header_data_.complement_check) << "\n";
-    str_builder << "Binary checksum: " << std::setw(4) << std::setfill('0') << binary_header_data_.checksum << "\n";
+    str_builder << "Binary header checksum: " << std::setw(2) << std::setfill('0') << static_cast<int>(binary_header_data_.header_checksum) << "\n";
+    str_builder << "Binary global checksum: " << std::setw(4) << std::setfill('0') << binary_header_data_.global_checksum << "\n";
     return str_builder.str();
 }

@@ -14,7 +14,7 @@ class GBCBinary: public AddressableMemory{
         ///@details Struct for the headerdata (0x134 => 0x14F). Aligned for uint16_t.
         ///         based on https://github.com/icecr4ck/bnGB/blob/master/README.md, https://www.zophar.net/fileuploads/2/10597teazh/gbrom.txt 
         ///         and https://gbdev.gg8.se/wiki/articles/The_Cartridge_Header. 
-        struct alignas(uint16_t) gbc_binary_headerdata{
+        struct alignas(uint16_t) GBCBinaryHeaderData{
             std::string title; //0x134 => 0x142; byte[14] binary title.
             uint8_t gameboy_type; //0x143, byte[1] 0x00 gameboy, 0x80 gameboy color
             uint8_t licencee_new; //0x144=>0x145, byte[2] licencee code new. Interpeted as value between 00 - 99!
@@ -25,8 +25,31 @@ class GBCBinary: public AddressableMemory{
             uint8_t japanese_code; //0x14A, byte[1] Japanese code.
             uint8_t licencee_old; //0x14B, byte[1] licencee code old.
             uint8_t mask_rom_version; //0x14C, byte[1] Rom version mask.
-            uint8_t complement_check; //0x14D, byte[1] Complement check. Checked, from wiki: x=0:FOR i=0134h TO 014C h:x=x-MEM[i]-1:NEXT
-            uint16_t checksum; //0x14E-0x14F, byte[2] headerdata checksum. Not valitated according to the wiki.
+            uint8_t header_checksum; //0x14D, byte[1] Complement check. Checked, from wiki: x=0:FOR i=0134h TO 014C h:x=x-MEM[i]-1:NEXT
+            uint16_t global_checksum; //0x14E-0x14F, byte[2] headerdata checksum. Not valitated according to the wiki.
+
+            ///@brief Empty intializer
+            ///@details Initializes empty data structure
+            GBCBinaryHeaderData();
+
+            /// @brief Value initializer
+            /// @param t title
+            /// @param g_type gameboy_type
+            /// @param licencee_n licencee_new
+            /// @param sgb_comp super gameboy compatability 
+            /// @param cart_type cartridge type
+            /// @param rom_s rom size
+            /// @param ram_s ram size
+            /// @param jap_code japanese code
+            /// @param licencee_o licencee old
+            /// @param rom_ver_mask rom version mask
+            /// @param head_check header checksum
+            /// @param glob_check global checksum
+            GBCBinaryHeaderData(
+                const std::string & t, uint8_t g_type, uint8_t licencee_n, uint8_t sgb_comp,
+                uint8_t cart_type, uint8_t rom_s, uint8_t ram_s, uint8_t jap_code, uint8_t licencee_o,
+                uint8_t rom_ver_mask, uint8_t head_check, uint16_t glob_check
+            );
         };
 
         ///@brief Static function that parses the given byte buffer as a GBCBinary.
@@ -46,12 +69,12 @@ class GBCBinary: public AddressableMemory{
         ///@param valid_header Was header validated succesfull using the checksum?
         ///@param byte_buffer Bytes of the binary.
         ///@details Initializes GBCBinary with values.
-        GBCBinary(const GBCBinary::gbc_binary_headerdata& header, const bool valid_logo, const bool valid_header, const std::vector<uint8_t>& byte_buffer);
+        GBCBinary(const GBCBinary::GBCBinaryHeaderData& header, const bool valid_logo, const bool valid_header, const std::vector<uint8_t>& byte_buffer);
 
-        ///@brief Getter for the binary headerdata variable (see struct `gbc_binary_headerdata`).
+        ///@brief Getter for the binary headerdata variable (see struct `GBCBinaryHeaderData`).
         ///@details Returns the headerdata available for the binary.
-        ///@return headerdata available for the binary (see struct `gbc_binary_headerdata`).
-        const GBCBinary::gbc_binary_headerdata& get_header_data() const;
+        ///@return headerdata available for the binary (see struct `GBCBinaryHeaderData`).
+        const GBCBinary::GBCBinaryHeaderData& get_header_data() const;
 
         ///@brief Does the binary have a valid logo?
         ///@details Does the 0x104 => 0x133 section represent a valid logo?
@@ -88,10 +111,10 @@ class GBCBinary: public AddressableMemory{
         ///@param byte_buffer std::vector buffer containing the binary bytes.
         ///@return headerdata available at 0x134 to 0x14F
         ///@throw std::out_of_range If given array is too small to contain header data.
-        static GBCBinary::gbc_binary_headerdata extract_header_data(const std::vector<uint8_t>& byte_buffer);
+        static GBCBinary::GBCBinaryHeaderData extract_header_data(const std::vector<uint8_t>& byte_buffer);
 
         //headerdata extracted from the binary
-        GBCBinary::gbc_binary_headerdata binary_header_data_;
+        GBCBinary::GBCBinaryHeaderData binary_header_data_;
 
         //Was header validated succesfull using the checksum?
         bool has_valid_header_;
