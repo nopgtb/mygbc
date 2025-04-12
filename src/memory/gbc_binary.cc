@@ -38,6 +38,24 @@ ram_size(ram_s), japanese_code(jap_code), licencee_old(licencee_o), mask_rom_ver
 {
 }
 
+/// @brief Comparison operator for the data type
+/// @param other 
+/// @return are the structs a match data wise?
+bool GBCBinary::GBCBinaryHeaderData::operator==(const GBCBinary::GBCBinaryHeaderData& other) const{
+    return title == other.title &&
+    gameboy_type == other.gameboy_type &&
+    licencee_new == other.licencee_new &&
+    sgb_compatability == other.sgb_compatability &&
+    cartridge_type == other.cartridge_type &&
+    rom_size == other.rom_size &&
+    ram_size == other.ram_size && 
+    japanese_code == other.japanese_code &&
+    licencee_old == other.licencee_old &&
+    mask_rom_version == other.mask_rom_version &&
+    header_checksum == other.header_checksum &&
+    global_checksum == other.global_checksum;
+}
+
 ///@brief Static function that parses the given byte buffer as a GBCBinary.
 ///@details Extracts header data and validates the logo from the given byte array. Returns info in the form of GBCBinary object.
 ///@param byte_buffer std::vector buffer containing the binary bytes.
@@ -119,10 +137,12 @@ GBCBinary::GBCBinaryHeaderData GBCBinary::extract_header_data(const std::vector<
     const uint16_t header_end_addr = 0x14F;
     if(byte_buffer.size() >= header_end_addr){
         GBCBinary::GBCBinaryHeaderData header_data;
-        const uint16_t header_title_start_addr = 0x134;
-        const uint16_t header_title_end_addr = 0x142;
+        const uint16_t header_title_start_addr = 0x134; //Inclusive
+        const uint16_t header_title_end_addr_medium = 0x142; //Inclusive
+        const uint16_t header_title_end_addr_long = 0x143; //Inclusive
+
         const std::map<std::string, uint16_t> header_flag_addr = {
-            {"gameboy_type", 0x143}, //gameboy_type, 1 byte
+            {"gameboy_type", 0x143}, //gameboy_type, 1 byte, Expected value 0x80 | 0xC0. If not, byte part of title (Wiki)
             {"licencee_new_byte_1", 0x144}, //licencee_new, 2 bytes, byte 1/2
             {"licencee_new_byte_2", 0x145}, //licencee_new, 2 bytes, byte 2/2
             {"sgb_compatability", 0x146}, //sgb_compatability, 1 byte
@@ -135,6 +155,14 @@ GBCBinary::GBCBinaryHeaderData GBCBinary::extract_header_data(const std::vector<
             {"header_checksum", 0x14D}, //header_checksum, 1 byte
             {"global_checksum", 0x14E}, //global_checksum, 2 bytes
         };
+        uint16_t header_title_end_addr = header_title_end_addr_medium;
+        header_data.gameboy_type = byte_buffer[header_flag_addr.at("gameboy_type")];
+        if(header_data.gameboy_type != 0x80 || header_data.gameboy_type != 0xC0){
+            //Expected value 0x80 | 0xC0. If not, byte part of title (Wiki)
+            header_title_end_addr = header_title_end_addr_long;
+            header_data.gameboy_type = 0;
+        }
+
         //Handle title as complex data type std::string
         header_data.title = std::string(
             reinterpret_cast<const char*>(
@@ -143,7 +171,6 @@ GBCBinary::GBCBinaryHeaderData GBCBinary::extract_header_data(const std::vector<
             (header_title_end_addr - header_title_start_addr)
         );
         //Copy header flags
-        header_data.gameboy_type = byte_buffer[header_flag_addr.at("gameboy_type")];
         try{
             header_data.licencee_new = Util::combined_char_based_value(
                 byte_buffer[header_flag_addr.at("licencee_new_byte_1")],

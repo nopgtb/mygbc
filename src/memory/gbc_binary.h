@@ -15,7 +15,8 @@ class GBCBinary: public AddressableMemory{
         ///         based on https://github.com/icecr4ck/bnGB/blob/master/README.md, https://www.zophar.net/fileuploads/2/10597teazh/gbrom.txt 
         ///         and https://gbdev.gg8.se/wiki/articles/The_Cartridge_Header. 
         struct alignas(uint16_t) GBCBinaryHeaderData{
-            std::string title; //0x134 => 0x142; byte[14] binary title.
+            std::string title; //0x134 => 0x142 | 0x134 => 0x144 ; byte[16] | byte [15] byte binary title.
+            //std::string manufacturing_code; TODO: WIKI. 0x13F=>0x142 potentially a manufacturing code
             uint8_t gameboy_type; //0x143, byte[1] 0x00 gameboy, 0x80 gameboy color
             uint8_t licencee_new; //0x144=>0x145, byte[2] licencee code new. Interpeted as value between 00 - 99!
             uint8_t sgb_compatability; //0x146, byte[1] Super GameBoy Compatability flag. Value either 0x00 or 0x03.
@@ -50,6 +51,11 @@ class GBCBinary: public AddressableMemory{
                 uint8_t cart_type, uint8_t rom_s, uint8_t ram_s, uint8_t jap_code, uint8_t licencee_o,
                 uint8_t rom_ver_mask, uint8_t head_check, uint16_t glob_check
             );
+
+            /// @brief Comparison operator for the data type
+            /// @param other 
+            /// @return are the structs a match data wise?
+            bool operator==(const GBCBinaryHeaderData& other) const;
         };
 
         ///@brief Static function that parses the given byte buffer as a GBCBinary.
