@@ -6,6 +6,7 @@
 #include <sstream> //std::ostringstream
 #include <iomanip> //std::hex, std::setw, std::setfill
 #include <map> //std::map
+#include <iostream>
 
 ///@brief Empty intializer
 ///@details Initializes empty data structure
@@ -138,8 +139,8 @@ GBCBinary::GBCBinaryHeaderData GBCBinary::extract_header_data(const std::vector<
     if(byte_buffer.size() >= header_end_addr){
         GBCBinary::GBCBinaryHeaderData header_data;
         const uint16_t header_title_start_addr = 0x134; //Inclusive
-        const uint16_t header_title_end_addr_medium = 0x142; //Inclusive
-        const uint16_t header_title_end_addr_long = 0x143; //Inclusive
+        const uint16_t header_title_end_addr_medium = 0x143; //Exclusive
+        const uint16_t header_title_end_addr_long = 0x144; //Exclusive
 
         const std::map<std::string, uint16_t> header_flag_addr = {
             {"gameboy_type", 0x143}, //gameboy_type, 1 byte, Expected value 0x80 | 0xC0. If not, byte part of title (Wiki)
@@ -157,7 +158,7 @@ GBCBinary::GBCBinaryHeaderData GBCBinary::extract_header_data(const std::vector<
         };
         uint16_t header_title_end_addr = header_title_end_addr_medium;
         header_data.gameboy_type = byte_buffer[header_flag_addr.at("gameboy_type")];
-        if(header_data.gameboy_type != 0x80 || header_data.gameboy_type != 0xC0){
+        if(header_data.gameboy_type != 0x80 && header_data.gameboy_type != 0xC0){
             //Expected value 0x80 | 0xC0. If not, byte part of title (Wiki)
             header_title_end_addr = header_title_end_addr_long;
             header_data.gameboy_type = 0;
@@ -170,6 +171,7 @@ GBCBinary::GBCBinaryHeaderData GBCBinary::extract_header_data(const std::vector<
             ),
             (header_title_end_addr - header_title_start_addr)
         );
+        Util::trim_trailing_null_bytes(header_data.title);
         //Copy header flags
         try{
             header_data.licencee_new = Util::combined_char_based_value(

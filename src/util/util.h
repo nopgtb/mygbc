@@ -2,6 +2,7 @@
 #define UTIL_H
 
 #include <cstdint> //Fixed lenght variables
+#include <string> //std::string
 
 class Util{
 public:
@@ -18,6 +19,11 @@ public:
     ///@return Combined ASCII number valuation of the two bytes.
     ///@throw std::out_of_range. If either one of the bytes cant be interpeted as a number in ASCII (0x30-0x39). 
     static uint8_t combined_char_based_value(const uint8_t first_byte, const uint8_t second_byte);
+
+    /// @brief Given a string, trims all trailing 0x00 bytes off the string.
+    /// @details Given a string, trims all trailing 0x00 bytes off the string.
+    /// @param str string to be trimmed.
+    static void trim_trailing_null_bytes(std::string& str);
 };
 
 #endif

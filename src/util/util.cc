@@ -1,5 +1,6 @@
 #include "util.h" //Util
 #include <stdexcept> //std::out_of_range
+#include <algorithm> //std::find_if
 
 /// @brief Converts a 16-bit value to network byte order (big-endian) if the system is little-endian.
 /// @details Checks the endianness of the system. If the system is little-endian, it swaps the bytes of the given 16-bit value to convert it to big-endian format. If the system is already big-endian, the value is returned as-is.
@@ -30,4 +31,18 @@ uint8_t Util::combined_char_based_value(const uint8_t first_byte, const uint8_t 
         return (((uint8_t)(first_byte - 0x30)) * 0xA) + ((uint8_t)(second_byte - 0x30)); 
     }
     throw std::out_of_range("Can't interpet given bytes as ASCII numbers (val is between 0x30 - 0x39)!");
+}
+
+/// @brief Given a string, trims all trailing 0x00 bytes off the string.
+/// @details Given a string, trims all trailing 0x00 bytes off the string.
+/// @param str string to be trimmed.
+void Util::trim_trailing_null_bytes(std::string& str){
+    str.erase(
+        std::find_if(
+            str.rbegin(),
+            str.rend(),
+            [](unsigned char l){return l != 0x00;}
+        ).base(),
+        str.end()
+    );
 }
