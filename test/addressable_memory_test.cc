@@ -3,17 +3,6 @@
 #include <vector> //std::vector
 #include <tuple> //std::tuple
 
-/*
-    things i want to test
-
-    1) Creation
-        Passing X byte vector and flags => object matches them
-    2) Setters
-        Byte and Word setters
-    3) Getters
-        Byte, Word getters and the whole memory getter
-*/
-
 //Definitions
 #define OK_MEMORY_SIZE 0x200
 
