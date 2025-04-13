@@ -46,7 +46,8 @@ class AddressableMemory{
     ///@details Set the byte located at the given address to the given value. Address is zero-based indexed. 
     ///@param addr Zero based address.
     ///@param value Byte, New value.
-    ///@throw std::out_of_range if given address is not valid address. 
+    ///@throw std::out_of_range if given address is not valid address.
+    ///@throw std::logic_error if protected memory flag is set
     virtual void set(const uint16_t addr, const uint8_t value);
 
     ///@brief Sets the word located at the given address to the given value.
@@ -54,6 +55,7 @@ class AddressableMemory{
     ///@param addr Zero based address.
     ///@param value Word, New value.
     ///@throw std::out_of_range if given address is not valid address. 
+    ///@throw std::logic_error if protected memory flag is set
     virtual void set(const uint16_t addr, const uint16_t value);
 
     ///@brief Sets the contents of the memory to the given value. Observes read_only flag.
@@ -67,13 +69,14 @@ class AddressableMemory{
     virtual void free();
 
     ///@brief Flips the read only memory flag value.
+    ///@param flag New read only flag value.
     ///@details Flips the read only memory flag value.
-    void flip_read_only_flag();
+    void set_read_only_flag(bool flag);
 
     ///@brief Returns the read only memory flag.
     ///@details Returns the read only memory flag.
     ///@return The read only memory flag.
-    bool get_read_only_flag() const;
+    bool is_read_only() const;
 
     private:
         //Binary bytes

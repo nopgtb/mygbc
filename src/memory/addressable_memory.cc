@@ -1,5 +1,5 @@
-#include "addressable_memory.h"
-#include "../util/util.h"
+#include "addressable_memory.h" //AddressableMemory
+#include "../util/util.h" //Util
 #include <stdexcept> //std::out_of_range
 #include <cstring> //std::memcpy
 
@@ -22,15 +22,16 @@ AddressableMemory::~AddressableMemory(){
 }
 
 ///@brief Flips the read only memory flag value.
+///@param flag New read only flag value.
 ///@details Flips the read only memory flag value.
-void AddressableMemory::flip_read_only_flag(){
-    read_only_memory_ = !read_only_memory_;
+void AddressableMemory::set_read_only_flag(bool flag){
+    read_only_memory_ = flag;
 }
 
 ///@brief Returns the read only memory flag.
 ///@details Returns the read only memory flag.
 ///@return The read only memory flag.
-bool AddressableMemory::get_read_only_flag() const{
+bool AddressableMemory::is_read_only() const{
     return read_only_memory_;
 }
 
@@ -40,7 +41,7 @@ bool AddressableMemory::get_read_only_flag() const{
 ///@return byte value located at the given address.
 ///@throw std::out_of_range if given address is not valid address. 
 uint8_t AddressableMemory::get_byte(const uint16_t addr) const {
-    if(memory_.size() <= addr){
+    if(addr < memory_.size()){
         return memory_[addr];
     }
     else{
@@ -54,11 +55,10 @@ uint8_t AddressableMemory::get_byte(const uint16_t addr) const {
 ///@return Word value located at the given address.
 ///@throw std::out_of_range if given address is not valid address. 
 uint16_t AddressableMemory::get_word(const uint16_t addr) const{
-    if(memory_.size() <= addr){
-        uint16_t val = 0;
-        std::memcpy(&val, &memory_[addr], sizeof(uint16_t));
-        val = Util::nthos16_t(val);
-        return val;
+    const uint16_t byte_one_addr = addr;
+    const uint16_t byte_two_addr = addr + 1;
+    if(byte_two_addr < memory_.size()){
+        return (static_cast<uint16_t>(memory_[byte_one_addr]) << 8) | static_cast<uint16_t>(memory_[byte_two_addr]);
     }
     else{
         throw std::out_of_range("Invalid address given! Can't access memory at address.");
@@ -77,10 +77,14 @@ const std::vector<uint8_t>& AddressableMemory::get_memory() const{
 ///@param addr Zero based address.
 ///@param value Byte, New value.
 ///@throw std::out_of_range if given address is not valid address. 
+///@throw std::logic_error if protected memory flag is set
 void AddressableMemory::set(const uint16_t addr, const uint8_t value){
-    if(memory_.size() <= addr){
-        if(!get_read_only_flag()){
+    if(addr < memory_.size()){
+        if(!is_read_only()){
             memory_[addr] = value;
+        }
+        else{
+            throw std::logic_error("Can't write on protected memory!");
         }
     }
     else{
@@ -92,15 +96,21 @@ void AddressableMemory::set(const uint16_t addr, const uint8_t value){
 ///@details Set the word located at the given address to the given value. Address is zero-based indexed. 
 ///@param addr Zero based address.
 ///@param value Word, New value.
-///@throw std::out_of_range if given address is not valid address. 
+///@throw std::out_of_range if given address is not valid address.
+///@throw std::logic_error if protected memory flag is set
 void AddressableMemory::set(const uint16_t addr, const uint16_t value){
     const uint16_t first_byte_addr = addr;
     const uint16_t second_byte_addr = addr + 1;
-    if(memory_.size() <= first_byte_addr && memory_.size() <= second_byte_addr){
-        //Copy each byte at time
-        const uint8_t * byte_ptr = reinterpret_cast<const uint8_t*>(&value);
-        memory_[first_byte_addr] = byte_ptr[0];
-        memory_[second_byte_addr] = byte_ptr[1];
+    if(second_byte_addr < memory_.size()){
+        if(!is_read_only()){
+            //Copy each byte at time
+            const uint8_t * byte_ptr = reinterpret_cast<const uint8_t*>(&value);
+            memory_[first_byte_addr] = byte_ptr[1];
+            memory_[second_byte_addr] = byte_ptr[0];
+        }
+        else{
+            throw std::logic_error("Can't write on protected memory!");
+        }
     }
     else{
         throw std::out_of_range("Invalid address given! Can't access memory at address.");
@@ -112,10 +122,12 @@ void AddressableMemory::set(const uint16_t addr, const uint16_t value){
 ///@param contents new contents of the memory
 ///@throw std::logic_error if read_only flag is set. 
 void AddressableMemory::set_memory(const std::vector<uint8_t>& contents){
-    if(!read_only_memory_){
+    if(!is_read_only()){
         memory_ = contents;
     }
-    throw std::logic_error("Tried to set memory that is protected by a read only flag!");
+    else{
+        throw std::logic_error("Tried to set memory that is protected by a read only flag!");
+    }
 }
 
 ///@brief Frees the memory assosiated with the memory object.
