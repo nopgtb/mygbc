@@ -1,22 +1,24 @@
 cmake_minimum_required(VERSION 3.22.1)
-set(This gbcemu)
-project(${This} CXX)
+set(THIS gbcemu)
+set(THIS_LIB libgbcemu)
 
+project(${THIS} CXX)
 set(CMAKE_CXX_STANDARD 20)
 
-set(Headers
-    src/util/util.h
-    src/memory/gbc_binary.h
-    src/util/binary_reader.h
-    src/memory/addressable_memory.h
-)
+#Get source code
+add_subdirectory(src)
 
-set(Sources
-    src/main.cc
-    src/util/util.cc
-    src/memory/gbc_binary.cc
-    src/util/binary_reader.cc
-    src/memory/addressable_memory.cc
+#Build tests
+enable_testing()
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  GIT_REPOSITORY https://github.com/google/googletest.git
+  GIT_TAG main #google declared the repo 'live at head' repo so pull the latest
 )
+FetchContent_MakeAvailable(googletest)
+add_library(${THIS_LIB} STATIC ${SRC_SOURCES} ${SRC_HEADERS})
+add_subdirectory(test)
 
-add_executable(${This} ${Sources} ${Headers})
+#Build program
+add_executable(${THIS} ${SRC_SOURCES} ${SRC_HEADERS})
