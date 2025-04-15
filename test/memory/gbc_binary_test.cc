@@ -1,4 +1,4 @@
-#include "../src/memory/gbc_binary.h" //GBCBinary
+#include "../../src/memory/gbc_binary.h" //GBCBinary
 #include <gtest/gtest.h> //GTest
 #include <stdexcept> //std::out_of_range
 #include <cstring> //Fixed lenght variables

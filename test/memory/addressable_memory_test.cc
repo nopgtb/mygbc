@@ -1,4 +1,4 @@
-#include "../src/memory/addressable_memory.h" //GBCBinary
+#include "../../src/memory/addressable_memory.h" //GBCBinary
 #include <gtest/gtest.h> //GTest
 #include <vector> //std::vector
 #include <tuple> //std::tuple

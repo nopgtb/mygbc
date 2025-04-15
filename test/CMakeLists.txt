@@ -4,8 +4,10 @@ set(THIS gbcemu_test)
 set(THIS_LIB libgbcemu)
 
 set(TEST_SOURCES
-    gbc_binary_test.cc
-    addressable_memory_test.cc
+    memory/gbc_binary_test.cc
+    memory/addressable_memory_test.cc
+    memory/register_test.cc
+    util/util_test.cc
 )
 
 add_executable(${THIS} ${TEST_SOURCES})
