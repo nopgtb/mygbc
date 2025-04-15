@@ -15,12 +15,12 @@ uint16_t Util::nthos16_t(const uint16_t val){
     return val;
 }
 
-///@brief Converts the two bytes into their equilevant number in the ASCII - representation. Combines the two chars and returns it as uint8_t number.
-///@details New licensee format described here https://www.zophar.net/fileuploads/2/10597teazh/gbrom.txt. Fullfills the described handling of the two bytes.
-///@param first_byte first byte of the two bytes
-///@param second_byte second byte of the two bytes
-///@return Combined ASCII number valuation of the two bytes.
-///@throw std::out_of_range. If either one of the bytes cant be interpeted as a number in ASCII (0x30-0x39). 
+/// @brief Converts the two bytes into their equilevant number in the ASCII - representation. Combines the two chars and returns it as uint8_t number.
+/// @details New licensee format described here https://www.zophar.net/fileuploads/2/10597teazh/gbrom.txt. Fullfills the described handling of the two bytes.
+/// @param first_byte first byte of the two bytes
+/// @param second_byte second byte of the two bytes
+/// @return Combined ASCII number valuation of the two bytes.
+/// @throw std::out_of_range. If either one of the bytes cant be interpeted as a number in ASCII (0x30-0x39). 
 uint8_t Util::combined_char_based_value(const uint8_t first_byte, const uint8_t second_byte){
     //Are we a number in ASCII?
     if(
@@ -36,13 +36,16 @@ uint8_t Util::combined_char_based_value(const uint8_t first_byte, const uint8_t 
 /// @brief Given a string, trims all trailing 0x00 bytes off the string.
 /// @details Given a string, trims all trailing 0x00 bytes off the string.
 /// @param str string to be trimmed.
-void Util::trim_trailing_null_bytes(std::string& str){
-    str.erase(
+/// @return the remaining string without the null bytes
+std::string Util::trim_trailing_null_bytes(const std::string& str){
+    std::string trim_result = str;
+    trim_result.erase(
         std::find_if(
-            str.rbegin(),
-            str.rend(),
+            trim_result.rbegin(),
+            trim_result.rend(),
             [](unsigned char l){return l != 0x00;}
         ).base(),
-        str.end()
+        trim_result.end()
     );
+    return trim_result;
 }
