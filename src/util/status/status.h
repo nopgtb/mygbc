@@ -37,16 +37,21 @@ class Status{
         /// @return Type of the status (See Status::StatusType)  
         const Status::StatusType& get_type() const noexcept;
 
-        /// @brief Builds a status with UNKOWN type and with given message,
+        /// @brief Builds a status with OK type.
+        /// @details Status is returned with OK type.
+        /// @return OK status object.
+        static Status ok_status();
+
+        /// @brief Builds a status with UNKOWN type and with given message.
         /// @details Status is returned with UNKOWN type and given message.
-        /// @param message Status message
-        /// @return UNKOWN status object
+        /// @param message Status message.
+        /// @return UNKOWN status object.
         static Status unkown_error(const std::string& message);
 
-        /// @brief Builds a status with IOERROR type and with given message,
+        /// @brief Builds a status with IOERROR type and with given message.
         /// @details Status is returned with IOERROR type and given message.
-        /// @param message Status message
-        /// @return IOERROR status object
+        /// @param message Status message.
+        /// @return IOERROR status object.
         static Status io_error(const std::string& message);
 
     private:
