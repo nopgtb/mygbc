@@ -32,11 +32,13 @@ std::vector<uint8_t> insert_into_empty(const int size_of_empty, const int insert
 class GBCBinaryMinimumBinarySizeEnforcedTest : public ::testing::TestWithParam<std::vector<uint8_t>> {};
 
 /// @brief Checks that GBCBinary::parse_bytes enforces minimum binary sizes correctly.
-/// @details  GBCBinary::parse_bytes should throw std::out_of_range when binary size is less than 0x14F.
+/// @details  GBCBinary::parse_bytes should gives error status when binary size is less than 0x14F.
 TEST_P(GBCBinaryMinimumBinarySizeEnforcedTest, minimum_binary_size_enforced){
     std::vector<uint8_t> binary_data = GetParam();
+    const bool expected_ok_status = false;
+    StatusOr<GBCBinary> binary = GBCBinary::parse_bytes(binary_data);
     //Correctly fails invalid binary
-    ASSERT_THROW(GBCBinary::parse_bytes(binary_data), std::out_of_range);
+    ASSERT_EQ(binary.ok(), expected_ok_status);
 }
 
 /// @brief Initantiazation of minimum_binary_size_enforced.
@@ -53,14 +55,14 @@ INSTANTIATE_TEST_SUITE_P(
 class GBCBinaryValidSizeTest : public ::testing::TestWithParam<std::vector<uint8_t>> {};
 
 /// @brief Checks that GBCBinary::parse_bytes parses when the binary is of valid size >= 0x14F.
-/// @details  GBCBinary::parse_bytes should not throw std::out_of_range when binary size is >= than 0x14F.
+/// @details  GBCBinary::parse_bytes should not give error status when binary size is >= than 0x14F.
 TEST_P(GBCBinaryValidSizeTest, valid_size_no_error){
     std::vector<uint8_t> binary_data = GetParam();
-    GBCBinary parsed_binary;
-    //Parses with no throw
-    ASSERT_NO_THROW(parsed_binary = GBCBinary::parse_bytes(binary_data));
+    const bool expected_ok_status = true;
+    StatusOr<GBCBinary> binary = GBCBinary::parse_bytes(binary_data);
     //Parse result matches in size
-    ASSERT_EQ(parsed_binary.get_memory().size(), binary_data.size());
+    ASSERT_EQ(binary.ok(), expected_ok_status);
+    ASSERT_EQ(binary.value().get_memory().size(), binary_data.size());
 }
 
 /// @brief Initantiazation of valid_size_no_error.
@@ -80,11 +82,12 @@ class GBCBinaryLogoTest : public ::testing::TestWithParam<std::tuple<std::vector
 /// @details  GBCBinary::parse_bytes should return a object with correct logo_validity flag for the input.
 TEST_P(GBCBinaryLogoTest, logo_validated_correctly){
     std::tuple<std::vector<uint8_t>, bool> test_data = GetParam();
-    GBCBinary parsed_binary;
-    //Parses with no throw
-    ASSERT_NO_THROW(parsed_binary = GBCBinary::parse_bytes(std::get<0>(test_data)));
+    const bool expected_ok_status = true;
+    StatusOr<GBCBinary> binary = GBCBinary::parse_bytes(std::get<0>(test_data));
+    //Parses ok
+    ASSERT_EQ(binary.ok(), expected_ok_status);
     //Logo check result matches expected
-    ASSERT_EQ(parsed_binary.has_valid_logo(), std::get<1>(test_data));
+    ASSERT_EQ(binary.value().has_valid_logo(), std::get<1>(test_data));
 }
 
 /// @brief Initantiazation of logo_validated_correctly.
@@ -148,11 +151,12 @@ class GBCBinaryHeaderValidityTest : public ::testing::TestWithParam<std::tuple<s
 /// @details  GBCBinary::parse_bytes should return a object with correct header_validity flag for the input.
 TEST_P(GBCBinaryHeaderValidityTest, header_validated_correctly){
     std::tuple<std::vector<uint8_t>, bool> test_data = GetParam();
-    GBCBinary parsed_binary;
-    //Parses with no throw
-    ASSERT_NO_THROW(parsed_binary = GBCBinary::parse_bytes(std::get<0>(test_data)));
+    const bool expected_ok_status = true;
+    StatusOr<GBCBinary> binary = GBCBinary::parse_bytes(std::get<0>(test_data));
+    //Parses ok
+    ASSERT_EQ(binary.ok(), expected_ok_status);
     //header check result matches expected
-    ASSERT_EQ(parsed_binary.has_valid_header(), std::get<1>(test_data));
+    ASSERT_EQ(binary.value().has_valid_header(), std::get<1>(test_data));
 }
 
 /// @brief Initantiazation of header_validated_correctly.
@@ -195,11 +199,12 @@ class GBCBinaryHeaderParsingTest : public ::testing::TestWithParam<std::tuple<st
 /// @details  GBCBinary::parse_bytes should return a object with correct header_validity flag for the input.
 TEST_P(GBCBinaryHeaderParsingTest, header_parsed_correctly){
     std::tuple<std::vector<uint8_t>, GBCBinary::GBCBinaryHeaderData> test_data = GetParam();
-    GBCBinary parsed_binary;
-    //Parses with no throw
-    ASSERT_NO_THROW(parsed_binary = GBCBinary::parse_bytes(std::get<0>(test_data)));
+    const bool expected_ok_status = true;
+    StatusOr<GBCBinary> binary = GBCBinary::parse_bytes(std::get<0>(test_data));
+    //Parses ok
+    ASSERT_EQ(binary.ok(), expected_ok_status);
     //header data matches expected
-    ASSERT_TRUE(parsed_binary.get_header_data() == std::get<1>(test_data));
+    ASSERT_TRUE(binary.value().get_header_data() == std::get<1>(test_data));
 }
 
 /// @brief Initantiazation of header_parsed_correctly.
