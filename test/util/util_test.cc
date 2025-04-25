@@ -12,11 +12,12 @@ class UtilCombinedCharBasedValueTest : public ::testing::TestWithParam<std::tupl
 ///         and combines the values as string. The string is then cast as uint8_t, giving the final value.
 TEST_P(UtilCombinedCharBasedValueTest, combine_value_test){
     std::tuple<std::tuple<uint8_t, uint8_t>, uint8_t> test_values = GetParam();
-    uint8_t result = Util::combined_char_based_value(
+    StatusOr<uint8_t> result = Util::combined_char_based_value(
         std::get<0>(std::get<0>(test_values)),
         std::get<1>(std::get<0>(test_values))
     );
-    ASSERT_EQ(std::get<1>(test_values), result);
+    ASSERT_EQ(true, result.ok());
+    ASSERT_EQ(std::get<1>(test_values), result.value());
 }
 
 /// @brief Initantiazation of combine_value_test.
@@ -50,8 +51,10 @@ INSTANTIATE_TEST_SUITE_P(
 /// @brief Checks that Util::combined_char_based_value throws when given invalid values (not number(ASCII)).
 /// @details combined_char_based_value throws when either of the value is less than 0x30 or more than 0x39.
 TEST(UtilCombinedCharBasedValueTest, throws_on_invalid_values){
-    ASSERT_THROW(Util::combined_char_based_value(0x29, 0x30), std::out_of_range);
-    ASSERT_THROW(Util::combined_char_based_value(0x30, 0x29), std::out_of_range);
+    StatusOr<uint8_t> out_of_bound_value1 = Util::combined_char_based_value(0x29, 0x30);
+    StatusOr<uint8_t> out_of_bound_value2 = Util::combined_char_based_value(0x30, 0x29);
+    ASSERT_EQ(false, out_of_bound_value1.ok());
+    ASSERT_EQ(false, out_of_bound_value2.ok());
 }
 
 class UtilTrimTrailingNullBytesTest : public ::testing::TestWithParam<std::tuple<std::string, std::string>> {};
