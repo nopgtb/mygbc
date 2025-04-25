@@ -34,17 +34,21 @@ TEST(AddressableMemoryReadTest, read_byte_test){
     AddressableMemory memory(std::vector<uint8_t>{0x00, 0x01, 0x02}, false);
     const uint8_t expected_result = 0x01;
     const uint16_t read_addr = 0x01;
-    uint8_t read_result = 0;
-    ASSERT_NO_THROW(read_result = memory.get_byte(read_addr));
-    ASSERT_EQ(read_result, expected_result);
+    const bool ok_status_expected = true;
+    StatusOr<uint8_t> read_result;
+    read_result = memory.get_byte(read_addr);
+    ASSERT_EQ(read_result.ok(), ok_status_expected);
+    ASSERT_EQ(read_result.value(), expected_result);
 }
 
-/// @brief Checks that AddressableMemory throws on invalid address byte fetch.
-/// @details  throws on invalid address byte fetch.
+/// @brief Checks that AddressableMemory gives error status on invalid address byte fetch.
+/// @details  gives error status on invalid address byte fetch.
 TEST(AddressableMemoryReadTest, read_byte_invalid_addr_test){
     AddressableMemory memory(std::vector<uint8_t>{0x00, 0x01, 0x02}, false);
     const uint16_t read_addr = 0x04;
-    ASSERT_THROW(memory.get_byte(read_addr), std::out_of_range);
+    const bool ok_status_expected = false;
+    StatusOr<uint8_t> read_result = memory.get_byte(read_addr);
+    ASSERT_EQ(read_result.ok(), ok_status_expected);
 }
 
 /// @brief Checks that AddressableMemory fetches word sized data correctly.
@@ -53,17 +57,20 @@ TEST(AddressableMemoryReadTest, read_word_test){
     AddressableMemory memory(std::vector<uint8_t>{0x00, 0x01, 0x02}, false);
     const uint16_t expected_result = 0x0102;
     const uint16_t read_addr = 0x01;
-    uint16_t read_result = 0;
-    ASSERT_NO_THROW(read_result = memory.get_word(read_addr));
-    ASSERT_EQ(read_result, expected_result);
+    const bool ok_status_expected = true;
+    StatusOr<uint16_t> read_result = memory.get_word(read_addr);
+    ASSERT_EQ(read_result.ok(), ok_status_expected);
+    ASSERT_EQ(read_result.value(), expected_result);
 }
 
-/// @brief Checks that AddressableMemory throws on invalid address word fetch.
-/// @details  throws on invalid address word fetch.
+/// @brief Checks that AddressableMemory gives error status on invalid address word fetch.
+/// @details  gives error status on invalid address word fetch.
 TEST(AddressableMemoryReadTest, read_word_invalid_addr_test){
     AddressableMemory memory(std::vector<uint8_t>{0x00, 0x01, 0x02}, false);
     const uint16_t read_addr = 0x03;
-    ASSERT_THROW(memory.get_word(read_addr), std::out_of_range);
+    const bool ok_status_expected = false;
+    StatusOr<uint16_t> read_result = memory.get_word(read_addr);
+    ASSERT_EQ(read_result.ok(), ok_status_expected);
 }
 
 /// @brief Checks that AddressableMemory sets byte sized data correctly.
@@ -73,7 +80,9 @@ TEST(AddressableMemorySetTest, set_byte_test){
     const std::vector<uint8_t> expected_result{0x00, 0x05, 0x02};
     const uint16_t set_addr = 0x01;
     const uint8_t set_value = 0x05;
-    ASSERT_NO_THROW(memory.set(set_addr, set_value));
+    const bool ok_status_expected = true;
+    Status write_result = memory.set(set_addr, set_value);
+    ASSERT_EQ(write_result.ok(), ok_status_expected);
     ASSERT_EQ(memory.get_memory(), expected_result);
 }
 
@@ -84,7 +93,9 @@ TEST(AddressableMemorySetTest, set_word_test){
     const std::vector<uint8_t> expected_result{0x00, 0x05, 0x04};
     const uint16_t set_addr = 0x01;
     const uint16_t set_value = 0x0504;
-    ASSERT_NO_THROW(memory.set(set_addr, set_value));
+    const bool ok_status_expected = true;
+    Status write_result = memory.set(set_addr, set_value);
+    ASSERT_EQ(write_result.ok(), ok_status_expected);
     ASSERT_EQ(memory.get_memory(), expected_result);
 }
 
@@ -93,26 +104,32 @@ TEST(AddressableMemorySetTest, set_word_test){
 TEST(AddressableMemorySetTest, set_memory_test){
     AddressableMemory memory(std::vector<uint8_t>{0x00, 0x01, 0x02}, false);
     const std::vector<uint8_t> expected_result{0x00, 0x05, 0x04};
-    ASSERT_NO_THROW(memory.set_memory(expected_result));
+    const bool ok_status_expected = true;
+    Status write_result = memory.set_memory(expected_result);
+    ASSERT_EQ(write_result.ok(), ok_status_expected);
     ASSERT_EQ(memory.get_memory(), expected_result);
 }
 
-/// @brief Checks that AddressableMemory throws when trying to set byte in protected memory.
-/// @details throws when trying to set byte in protected memory.
+/// @brief Checks that AddressableMemory gives error status when trying to set byte in protected memory.
+/// @details gives error status when trying to set byte in protected memory.
 TEST(AddressableMemorySetTest, set_byte_protected_memory_test){
     AddressableMemory memory(std::vector<uint8_t>{0x00, 0x01, 0x02}, true);
     const uint16_t set_addr = 0x01;
     const uint8_t set_value = 0x05;
-    ASSERT_THROW(memory.set(set_addr, set_value), std::logic_error);
+    const bool ok_status_expected = false;
+    Status write_result = memory.set(set_addr, set_value);
+    ASSERT_EQ(write_result.ok(), ok_status_expected);
 }
 
-/// @brief Checks that AddressableMemory throws when trying to set word in protected memory.
-/// @details throws when trying to set word in protected memory.
+/// @brief Checks that AddressableMemory gives error status when trying to set word in protected memory.
+/// @details gives error status when trying to set word in protected memory.
 TEST(AddressableMemorySetTest, set_word_protected_memory_test){
     AddressableMemory memory(std::vector<uint8_t>{0x00, 0x01, 0x02}, true);
     const uint16_t set_addr = 0x01;
     const uint16_t set_value = 0x0575;
-    ASSERT_THROW(memory.set(set_addr, set_value), std::logic_error);
+    const bool ok_status_expected = false;
+    Status write_result = memory.set(set_addr, set_value);
+    ASSERT_EQ(write_result.ok(), ok_status_expected);
 }
 
 /// @brief Checks that AddressableMemory sets the whole memorydata correctly.
@@ -120,25 +137,31 @@ TEST(AddressableMemorySetTest, set_word_protected_memory_test){
 TEST(AddressableMemorySetTest, set_memory_protected_memory_test){
     AddressableMemory memory(std::vector<uint8_t>{0x00, 0x01, 0x02}, true);
     const std::vector<uint8_t> expected_result{0x00, 0x05, 0x04};
-    ASSERT_THROW(memory.set_memory(expected_result), std::logic_error);
+    const bool ok_status_expected = false;
+    Status write_result = memory.set_memory(expected_result);
+    ASSERT_EQ(write_result.ok(), ok_status_expected);
 }
 
-/// @brief Checks that AddressableMemory throws when trying to set byte with invalid addr.
-/// @details throws when trying to set byte with invalid addr.
+/// @brief Checks that AddressableMemory gives error status when trying to set byte with invalid addr.
+/// @details gives error status when trying to set byte with invalid addr.
 TEST(AddressableMemorySetTest, set_byte_invalid_addr_test){
     AddressableMemory memory(std::vector<uint8_t>{0x00, 0x01, 0x02}, false);
     const uint16_t set_addr = 0x03;
     const uint8_t set_value = 0x05;
-    ASSERT_THROW(memory.set(set_addr, set_value), std::out_of_range);
+    const bool ok_status_expected = false;
+    Status write_result = memory.set(set_addr, set_value);
+    ASSERT_EQ(write_result.ok(), ok_status_expected);
 }
 
-/// @brief Checks that AddressableMemory throws when trying to set word with invalid addr.
-/// @details throws when trying to set word with invalid addr.
+/// @brief Checks that AddressableMemory gives error status when trying to set word with invalid addr.
+/// @details gives error status when trying to set word with invalid addr.
 TEST(AddressableMemorySetTest, set_word_invalid_addr_test){
     AddressableMemory memory(std::vector<uint8_t>{0x00, 0x01, 0x02}, false);
     const uint16_t set_addr = 0x03;
     const uint16_t set_value = 0x0575;
-    ASSERT_THROW(memory.set(set_addr, set_value), std::out_of_range);
+    const bool ok_status_expected = false;
+    Status write_result = memory.set(set_addr, set_value);
+    ASSERT_EQ(write_result.ok(), ok_status_expected);
 }
 
 /// @brief Checks that AddressableMemory frees memory correctly.
