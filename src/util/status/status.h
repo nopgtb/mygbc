@@ -13,6 +13,7 @@ class Status{
             PROTECTED_MEMORY_SET_ERROR = 3,
             INVALID_INDEX_ERROR = 4,
             INVALID_BINARY_ERROR = 5,
+            INVALID_INPUT_ERROR = 6,
         };
 
         /// @brief Builds a OK status as default.
@@ -74,6 +75,12 @@ class Status{
         /// @param message Status message.
         /// @return INVALID_BINARY_ERROR status object.
         static Status invalid_binary_error(const std::string& message);
+
+        /// @brief Builds a status with INVALID_INPUT_ERROR type and with given message.
+        /// @details Status is returned with INVALID_INPUT_ERROR type and given message.
+        /// @param message Status message.
+        /// @return INVALID_INPUT_ERROR status object.
+        static Status invalid_input_error(const std::string& message);
     private:
         
         StatusType type_;

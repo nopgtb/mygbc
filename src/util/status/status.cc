@@ -79,3 +79,11 @@ Status Status::invalid_index_error(const std::string& message){
 Status Status::invalid_binary_error(const std::string& message){
     return Status(Status::StatusType::INVALID_BINARY_ERROR, std::forward<const std::string>(message));
 }
+
+/// @brief Builds a status with INVALID_INPUT_ERROR type and with given message.
+/// @details Status is returned with INVALID_INPUT_ERROR type and given message.
+/// @param message Status message.
+/// @return INVALID_INPUT_ERROR status object.
+Status Status::invalid_input_error(const std::string& message){
+    return Status(Status::StatusType::INVALID_INPUT_ERROR, std::forward<const std::string>(message));
+}
