@@ -1,6 +1,8 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#include "../util/status/status.h" //Status
+#include "../util/status/status_or.h" //StatusOr
 #include <cstdint> //Fixed lenght variables
 #include <string> //std::string
 
@@ -16,9 +18,8 @@ public:
     /// @details New licensee format described here https://www.zophar.net/fileuploads/2/10597teazh/gbrom.txt. Fullfills the described handling of the two bytes.
     /// @param first_byte first byte of the two bytes
     /// @param second_byte second byte of the two bytes
-    /// @return Combined ASCII number valuation of the two bytes.
-    /// @throw std::out_of_range. If either one of the bytes cant be interpeted as a number in ASCII (0x30-0x39). 
-    static uint8_t combined_char_based_value(const uint8_t first_byte, const uint8_t second_byte);
+    /// @return Combined ASCII number valuation of the two bytes or error Status.
+    static StatusOr<uint8_t> combined_char_based_value(const uint8_t first_byte, const uint8_t second_byte);
 
     /// @brief Given a string, trims all trailing 0x00 bytes off the string.
     /// @details Given a string, trims all trailing 0x00 bytes off the string.
