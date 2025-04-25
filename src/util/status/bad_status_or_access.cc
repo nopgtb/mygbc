@@ -3,7 +3,7 @@
 /// @brief Default constructor for exception.
 /// @details Stores message for later use.
 /// @param msg Exception message.
-explicit BadStatusOrAccess::BadStatusOrAccess(std::string msg):message_(msg){
+BadStatusOrAccess::BadStatusOrAccess(std::string msg):message_(msg){
 
 }
 
