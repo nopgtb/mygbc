@@ -11,6 +11,7 @@ class Status{
             OK = 1,
             IO_ERROR = 2,
             PROTECTED_MEMORY_SET_ERROR = 3,
+            INVALID_INDEX_ERROR = 4,
         };
 
         /// @brief Builds a OK status as default.
@@ -60,6 +61,13 @@ class Status{
         /// @param message Status message.
         /// @return PROTECTED_MEMORY_SET_ERROR status object.
         static Status protected_memory_set_error(const std::string& message);
+
+        /// @brief Builds a status with INVALID_INDEX_ERROR type and with given message.
+        /// @details Status is returned with INVALID_INDEX_ERROR type and given message.
+        /// @param message Status message.
+        /// @return INVALID_INDEX_ERROR status object.
+        static Status invalid_index_error(const std::string& message);
+
 
     private:
         

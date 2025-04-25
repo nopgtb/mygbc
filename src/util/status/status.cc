@@ -63,3 +63,11 @@ Status Status::io_error(const std::string& message){
 Status Status::protected_memory_set_error(const std::string& message){
     return Status(Status::StatusType::PROTECTED_MEMORY_SET_ERROR, std::forward<const std::string>(message));
 }
+
+/// @brief Builds a status with INVALID_INDEX_ERROR type and with given message.
+/// @details Status is returned with INVALID_INDEX_ERROR type and given message.
+/// @param message Status message.
+/// @return INVALID_INDEX_ERROR status object.
+Status Status::invalid_index_error(const std::string& message){
+    return Status(Status::StatusType::INVALID_INDEX_ERROR, std::forward<const std::string>(message));
+}
