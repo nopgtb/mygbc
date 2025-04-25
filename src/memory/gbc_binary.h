@@ -2,6 +2,8 @@
 #define GBC_BINARY_H
 
 #include "addressable_memory.h" //AddressableMemory
+#include "../util/status/status.h" //Status
+#include "../util/status/status_or.h" //StatusOr
 #include <vector> //std::vector
 #include <string> //std::string
 #include <cstdint> //Fixed lenght variables
@@ -55,42 +57,41 @@ class GBCBinary: public AddressableMemory{
             /// @brief Comparison operator for the data type
             /// @param other 
             /// @return are the structs a match data wise?
-            bool operator==(const GBCBinaryHeaderData& other) const;
+            bool operator==(const GBCBinaryHeaderData& other) const noexcept;
         };
 
         /// @brief Static function that parses the given byte buffer as a GBCBinary.
         /// @details Extracts header data and validates the logo from the given byte array. Returns info in the form of GBCBinary object.
         /// @param byte_buffer std::vector buffer containing the binary bytes.
-        /// @return Parsed GBCBinary ready to be used.
-        /// @throw std::out_of_range If given array is too small to be valid GBCBinary.
-        static GBCBinary parse_bytes(const std::vector<uint8_t>& byte_buffer);
+        /// @return Parsed GBCBinary ready to be used or error Status.
+        static StatusOr<GBCBinary> parse_bytes(const std::vector<uint8_t>& byte_buffer) noexcept;
 
         /// @brief Initializes empty GBCBinary.
         /// @details Initializes empty GBCBinary.
         GBCBinary();
 
         /// @brief Initializes GBCBinary with values.
+        /// @details Initializes GBCBinary with values.
         /// @param header Parsed header data of the binary.
         /// @param valid_logo Logo status of the binary.
         /// @param valid_header Was header validated succesfull using the checksum?
         /// @param byte_buffer Bytes of the binary.
-        /// @details Initializes GBCBinary with values.
         GBCBinary(const GBCBinary::GBCBinaryHeaderData& header, const bool valid_logo, const bool valid_header, const std::vector<uint8_t>& byte_buffer);
 
         /// @brief Getter for the binary headerdata variable (see struct `GBCBinaryHeaderData`).
         /// @details Returns the headerdata available for the binary.
         /// @return headerdata available for the binary (see struct `GBCBinaryHeaderData`).
-        const GBCBinary::GBCBinaryHeaderData& get_header_data() const;
+        const GBCBinary::GBCBinaryHeaderData& get_header_data() const noexcept;
 
         /// @brief Does the binary have a valid logo?
         /// @details Does the 0x104 => 0x133 section represent a valid logo?
         /// @return Is the logo valid?
-        const bool& has_valid_logo() const;
+        const bool& has_valid_logo() const noexcept;
 
         /// @brief Does the binary have a valid header?
         /// @details Does the 0x134 => 0x14C section match the checksum at 0x14D?
         /// @return Is the header valid?
-        const bool& has_valid_header() const;
+        const bool& has_valid_header() const noexcept;
 
         /// @brief Gets the logo status and header data as a string representation.
         /// @brief Gets the logo status and header data as a string representation. Does not include byte contents of binary.
@@ -101,23 +102,20 @@ class GBCBinary: public AddressableMemory{
         /// @brief Checks if the logo is correct in byte_buffer.
         /// @details Checks wheter the bytes 0x104=>0x133 are a valid logo.
         /// @param byte_buffer std::vector buffer containing the binary bytes.
-        /// @return Were the bytes 0x104=>0x133 present and presented a valid logo?
-        /// @throw std::out_of_range If given array is too small to contain logo.
-        static bool check_logo_validity(const std::vector<uint8_t>& byte_buffer);
+        /// @return Were the bytes 0x104=>0x133 present and presented a valid logo or error Status.
+        static StatusOr<bool> check_logo_validity(const std::vector<uint8_t>& byte_buffer) noexcept;
 
         /// @brief Checks if the header checksum is correct in byte_buffer.
         /// @details Checks wheter the header bytes 0x134=>0x14C are a valid using the checksum at 0x14D.
         /// @param byte_buffer std::vector buffer containing the binary bytes.
-        /// @return Checks wheter the header bytes 0x134=>0x14C are a valid using the checksum at 0x14D.
-        /// @throw std::out_of_range If given array is too small to contain header.
-        static bool check_header_checksum_validity(const std::vector<uint8_t>& byte_buffer);
+        /// @return Checks wheter the header bytes 0x134=>0x14C are a valid using the checksum at 0x14D or error Status.
+        static StatusOr<bool> check_header_checksum_validity(const std::vector<uint8_t>& byte_buffer) noexcept;
 
         /// @brief Extracts binary headerdata.
         /// @details Extracts all the binary headerdata available.
         /// @param byte_buffer std::vector buffer containing the binary bytes.
-        /// @return headerdata available at 0x134 to 0x14F
-        /// @throw std::out_of_range If given array is too small to contain header data.
-        static GBCBinary::GBCBinaryHeaderData extract_header_data(const std::vector<uint8_t>& byte_buffer);
+        /// @return headerdata available at 0x134 to 0x14F or error Status.
+        static StatusOr<GBCBinary::GBCBinaryHeaderData> extract_header_data(const std::vector<uint8_t>& byte_buffer) noexcept;
 
         //headerdata extracted from the binary
         GBCBinary::GBCBinaryHeaderData binary_header_data_;

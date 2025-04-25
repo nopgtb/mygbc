@@ -3,8 +3,8 @@
 
 #include <vector> //std::vector
 #include <cstdint> //Fixed lenght variables
-#include "status/status_or.h" //StatusOr
-#include "status/status.h" //Status
+#include "../util/status/status.h" //Status
+#include "../util/status/status_or.h" //StatusOr
 
 /// @brief Interface class for all addressable memory.
 /// @details Interface class for all addressable memory. Contains functionality for read only memory.
