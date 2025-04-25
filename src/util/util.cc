@@ -29,7 +29,7 @@ StatusOr<uint8_t> Util::combined_char_based_value(const uint8_t first_byte, cons
     {
         return (((uint8_t)(first_byte - 0x30)) * 0xA) + ((uint8_t)(second_byte - 0x30)); 
     }
-    Status::invalid_input_error("Can't interpet given bytes as ASCII numbers (values must be between 0x30 - 0x39)!");
+    return Status::invalid_input_error("Can't interpet given bytes as ASCII numbers (values must be between 0x30 - 0x39)!");
 }
 
 /// @brief Given a string, trims all trailing 0x00 bytes off the string.
