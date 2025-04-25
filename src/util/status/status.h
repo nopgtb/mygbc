@@ -10,6 +10,7 @@ class Status{
             UNKOWN = 0,
             OK = 1,
             IO_ERROR = 2,
+            PROTECTED_MEMORY_SET_ERROR = 3,
         };
 
         /// @brief Builds a OK status as default.
@@ -53,6 +54,12 @@ class Status{
         /// @param message Status message.
         /// @return IOERROR status object.
         static Status io_error(const std::string& message);
+
+        /// @brief Builds a status with PROTECTED_MEMORY_SET_ERROR type and with given message.
+        /// @details Status is returned with PROTECTED_MEMORY_SET_ERROR type and given message.
+        /// @param message Status message.
+        /// @return PROTECTED_MEMORY_SET_ERROR status object.
+        static Status protected_memory_set_error(const std::string& message);
 
     private:
         

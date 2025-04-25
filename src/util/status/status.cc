@@ -55,3 +55,11 @@ Status Status::unkown_error(const std::string& message){
 Status Status::io_error(const std::string& message){
     return Status(Status::StatusType::IO_ERROR, std::forward<const std::string>(message));
 }
+
+/// @brief Builds a status with PROTECTED_MEMORY_SET_ERROR type and with given message.
+/// @details Status is returned with PROTECTED_MEMORY_SET_ERROR type and given message.
+/// @param message Status message.
+/// @return PROTECTED_MEMORY_SET_ERROR status object.
+Status Status::protected_memory_set_error(const std::string& message){
+    return Status(Status::StatusType::PROTECTED_MEMORY_SET_ERROR, std::forward<const std::string>(message));
+}
