@@ -11,8 +11,8 @@ TEST_P(RegisterReadBitsTest, read_bits_test){
     const bool expected_ok_status = true;
     std::tuple<std::vector<bool>, uint16_t> test_values = GetParam();
     Register A;
-    uint16_t on_off_pattern = std::get<1>(test_values);
-    A.set(0, on_off_pattern);
+    uint16_t test_pattern = std::get<1>(test_values);
+    A.set(0, test_pattern);
     std::vector<bool> expected = std::get<0>(test_values);
     //Go trough each bit and see if they match
     for (int byte_index = 0; byte_index < 2; ++byte_index){
@@ -48,6 +48,31 @@ INSTANTIATE_TEST_SUITE_P(
         ) //0101010101010101 Pattern
     )
 );
+
+/// @brief Test that read bit returns error on invalid byte and bit indexes
+/// @details Test all the edge cases for unaceptable indexes to registry bit read
+TEST(RegisterReadBitsTest, invalid_index_bit_read_test){
+    const bool expected_ok_status = false;
+    const Status::StatusType expected_status = Status::StatusType::INVALID_INDEX_ERROR;
+    Register A;
+    uint16_t test_pattern = 0x0000;
+    A.set(0, test_pattern);
+
+    std::vector<std::tuple<uint8_t, uint8_t>> invalid_indexes = {
+        std::make_tuple(0, 8), //Above accepted bit range, byte ok
+        std::make_tuple(3, 7), //Above accepted byte range, bit ok
+        std::make_tuple(3, 8) //Both unacceptable
+    };
+
+    for(int i = 0; i < invalid_indexes.size(); ++i){
+        uint8_t byte_index = std::get<0>(invalid_indexes[i]);
+        uint8_t bit_index = std::get<1>(invalid_indexes[i]);
+        StatusOr<bool> read_result = A.get_bit(byte_index, bit_index);
+        //Check that read fails with correct status
+        ASSERT_EQ(read_result.ok(), expected_ok_status);
+        ASSERT_EQ(read_result.get_status().get_type(), expected_status);
+    }
+}
 
 struct RegisterWriteBitsTestTestData{
     uint16_t initial_value;
@@ -125,3 +150,26 @@ INSTANTIATE_TEST_SUITE_P(
         RegisterWriteBitsTestTestData(0xFFFF, 0x7FFF, 0x0, 0x7, false)  //0111111111111111
     )
 );
+
+/// @brief Test that write bit returns error on invalid byte and bit indexes
+/// @details Test all the edge cases for unaceptable indexes to registry bit write
+TEST(RegisterWriteBitsTest, invalid_index_bit_write_test){
+    const Status::StatusType expected_status = Status::StatusType::INVALID_INDEX_ERROR;
+    Register A;
+    uint16_t test_pattern = 0x0000;
+    A.set(0, test_pattern);
+
+    std::vector<std::tuple<uint8_t, uint8_t>> invalid_indexes = {
+        std::make_tuple(0, 8), //Above accepted bit range, byte ok
+        std::make_tuple(3, 7), //Above accepted byte range, bit ok
+        std::make_tuple(3, 8) //Both unacceptable
+    };
+
+    for(int i = 0; i < invalid_indexes.size(); ++i){
+        uint8_t byte_index = std::get<0>(invalid_indexes[i]);
+        uint8_t bit_index = std::get<1>(invalid_indexes[i]);
+        Status write_test = A.set_bit(byte_index, bit_index, false);
+        //Check that write fails with correct status
+        ASSERT_EQ(write_test.get_type(), expected_status);
+    }
+}
