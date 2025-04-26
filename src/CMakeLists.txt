@@ -5,6 +5,8 @@ set(SRC_SOURCES
     src/memory/register.cc
     src/util/binary_reader.cc
     src/util/util.cc
+    src/util/status/status.cc
+    src/util/status/bad_status_or_access.cc
     PARENT_SCOPE
 )
 
@@ -14,5 +16,8 @@ set(SRC_HEADERS
     src/memory/register.h
     src/util/binary_reader.h
     src/util/util.h
+    src/util/status/status_or.h
+    src/util/status/status.h
+    src/util/status/bad_status_or_access.h
     PARENT_SCOPE
 )

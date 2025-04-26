@@ -4,6 +4,7 @@ set(THIS_LIB libgbcemu)
 
 project(${THIS} CXX)
 set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED YES)
 
 #Get source code
 add_subdirectory(src)
