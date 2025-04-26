@@ -1,5 +1,5 @@
 #include <iostream> //std::cout
-#include "util/binary_reader.h" //BinaryReader
+#include "util/io/binary_reader.h" //BinaryReader
 #include "memory/gbc_binary.h" //GBCBinary
 
 int main(int argc, char* argv[]){
