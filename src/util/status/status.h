@@ -16,8 +16,8 @@ class Status{
             INVALID_INPUT_ERROR = 6,
         };
 
-        /// @brief Builds a OK status as default.
-        /// @details Sets type_ to StatusType::OK and message to empty string.
+        /// @brief Builds a UNKOWN status as default.
+        /// @details Sets type_ to StatusType::UNKOWN and message to empty string.
         Status();
 
         /// @brief Builds a status with the given parameters.

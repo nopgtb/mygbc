@@ -8,6 +8,8 @@ set(TEST_SOURCES
     memory/addressable_memory_test.cc
     memory/register_test.cc
     util/util_test.cc
+    util/status/status_test.cc
+    util/status/status_or_test.cc
 )
 
 add_executable(${THIS} ${TEST_SOURCES})

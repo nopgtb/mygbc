@@ -2,7 +2,7 @@
 #include <utility> //std::forward
 
 /// @brief Builds a OK status as default.
-/// @details Sets type_ to StatusType::OK and message to empty string.
+/// @details Sets type_ to StatusType::UNKOWN and message to empty string.
 Status::Status():type_(Status::StatusType::UNKOWN), message_(""){
 }
 
