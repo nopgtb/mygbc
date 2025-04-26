@@ -48,6 +48,7 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(Status::protected_memory_set_error("protected_memory_set_error"), StatusBuildTestExpectedValues(Status::StatusType::PROTECTED_MEMORY_SET_ERROR, "protected_memory_set_error", false)),//protected_memory_set_error_status test
         std::make_tuple(Status::invalid_index_error("invalid_index_error"), StatusBuildTestExpectedValues(Status::StatusType::INVALID_INDEX_ERROR, "invalid_index_error", false)),//invalid_index_error_status test
         std::make_tuple(Status::invalid_binary_error("invalid_binary_error"), StatusBuildTestExpectedValues(Status::StatusType::INVALID_BINARY_ERROR, "invalid_binary_error", false)),//invalid_binary_error_status test
-        std::make_tuple(Status::invalid_input_error("invalid_input_error"), StatusBuildTestExpectedValues(Status::StatusType::INVALID_INPUT_ERROR, "invalid_input_error", false))//invalid_input_error_status test
+        std::make_tuple(Status::invalid_input_error("invalid_input_error"), StatusBuildTestExpectedValues(Status::StatusType::INVALID_INPUT_ERROR, "invalid_input_error", false)),//invalid_input_error_status test
+        std::make_tuple(Status::invalid_opcode_error("invalid_opcode_error"), StatusBuildTestExpectedValues(Status::StatusType::INVALID_OPCODE_ERROR, "invalid_opcode_error", false))//invalid_opcode_error_status test
     )
 );
