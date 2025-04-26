@@ -8,6 +8,7 @@ class RegisterReadBitsTest : public ::testing::TestWithParam<std::tuple<std::vec
 /// @brief Checks that Register delivers right value when reading bits.
 /// @details Checks that Register delivers right value when reading bits.
 TEST_P(RegisterReadBitsTest, read_bits_test){
+    const bool expected_ok_status = true;
     std::tuple<std::vector<bool>, uint16_t> test_values = GetParam();
     Register A;
     uint16_t on_off_pattern = std::get<1>(test_values);
@@ -16,7 +17,9 @@ TEST_P(RegisterReadBitsTest, read_bits_test){
     //Go trough each bit and see if they match
     for (int byte_index = 0; byte_index < 2; ++byte_index){
         for(int bit_index = 0; bit_index < 8; ++bit_index){
-            ASSERT_EQ(A.get_bit(byte_index, bit_index), expected[(byte_index*8) + bit_index]);
+            StatusOr<bool> read_result = A.get_bit(byte_index, bit_index);
+            ASSERT_EQ(read_result.ok(), expected_ok_status);
+            ASSERT_EQ(read_result.value(), expected[(byte_index*8) + bit_index]);
         }
     }
 }
@@ -70,9 +73,14 @@ class RegisterWriteBitsTest : public ::testing::TestWithParam<RegisterWriteBitsT
 TEST_P(RegisterWriteBitsTest, write_bits_test){
     RegisterWriteBitsTestTestData test_values = GetParam();
     Register A;
-    ASSERT_NO_THROW(A.set(0x0, test_values.initial_value));
-    ASSERT_NO_THROW(A.set_bit(test_values.byte_index, test_values.bit_index, test_values.set_value));
-    ASSERT_EQ(A.get_word(0x0), test_values.expected_value);
+    bool expected_ok_status = true;
+    Status initial_write = A.set(0x0, test_values.initial_value);
+    ASSERT_EQ(initial_write.ok(), expected_ok_status);
+    Status bit_set = A.set_bit(test_values.byte_index, test_values.bit_index, test_values.set_value);
+    ASSERT_EQ(bit_set.ok(), expected_ok_status);
+    StatusOr<uint16_t> read_result = A.get_word(0x0);
+    ASSERT_EQ(read_result.ok(), expected_ok_status);
+    ASSERT_EQ(read_result.value(), test_values.expected_value);
 }
 
 /// @brief Initantiazation of write_bits_test.

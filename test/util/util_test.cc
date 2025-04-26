@@ -1,6 +1,5 @@
 #include "../../src/util/util.h" //Util
 #include <gtest/gtest.h> //GTest
-#include <stdexcept> //std::out_of_range
 #include <string> //std::string
 #include <tuple> //std::tuple
 
@@ -53,10 +52,13 @@ INSTANTIATE_TEST_SUITE_P(
 /// @details combined_char_based_value gives error status when either of the value is less than 0x30 or more than 0x39.
 TEST(UtilCombinedCharBasedValueTest, error_status_on_invalid_values){
     const bool expected_ok_status = false;
+    const Status::StatusType expected_status = Status::StatusType::INVALID_INPUT_ERROR;
     StatusOr<uint8_t> out_of_bound_value1 = Util::combined_char_based_value(0x29, 0x30);
     StatusOr<uint8_t> out_of_bound_value2 = Util::combined_char_based_value(0x30, 0x29);
     ASSERT_EQ(out_of_bound_value1.ok(), expected_ok_status);
     ASSERT_EQ(out_of_bound_value2.ok(), expected_ok_status);
+    ASSERT_EQ(out_of_bound_value1.get_status().get_type(), expected_status);
+    ASSERT_EQ(out_of_bound_value2.get_status().get_type(), expected_status);
 }
 
 class UtilTrimTrailingNullBytesTest : public ::testing::TestWithParam<std::tuple<std::string, std::string>> {};

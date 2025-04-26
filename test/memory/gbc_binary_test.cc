@@ -36,9 +36,11 @@ class GBCBinaryMinimumBinarySizeEnforcedTest : public ::testing::TestWithParam<s
 TEST_P(GBCBinaryMinimumBinarySizeEnforcedTest, minimum_binary_size_enforced){
     std::vector<uint8_t> binary_data = GetParam();
     const bool expected_ok_status = false;
+    const Status::StatusType expected_status = Status::StatusType::INVALID_BINARY_ERROR;
     StatusOr<GBCBinary> binary = GBCBinary::parse_bytes(binary_data);
     //Correctly fails invalid binary
     ASSERT_EQ(binary.ok(), expected_ok_status);
+    ASSERT_EQ(binary.get_status().get_type(), expected_status);
 }
 
 /// @brief Initantiazation of minimum_binary_size_enforced.
