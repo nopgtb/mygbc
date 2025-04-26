@@ -1,7 +1,7 @@
 #ifndef BINARY_READER_H
 #define BINARY_READER_H
 
-#include "status/status_or.h" //StatusOr
+#include "../status/status_or.h" //StatusOr
 #include <vector> //std::vector
 #include <string> //std::string
 #include <cstdint> //Fixed lenght variables
