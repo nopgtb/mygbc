@@ -7,6 +7,8 @@ set(SRC_SOURCES
     src/util/util.cc
     src/util/status/status.cc
     src/util/status/bad_status_or_access.cc
+    src/components/instruction_set_lr35902/instruction_lr35902.cc
+    src/components/instruction_set_lr35902/instruction_set_lr35902.cc
     PARENT_SCOPE
 )
 
@@ -19,5 +21,8 @@ set(SRC_HEADERS
     src/util/status/status_or.h
     src/util/status/status.h
     src/util/status/bad_status_or_access.h
+    src/components/instruction_set_lr35902/instruction_lr35902.h
+    src/components/instruction_set_lr35902/instruction_decoder_lr35902.h
+    src/components/instruction_set_lr35902/instruction_set_lr35902.h
     PARENT_SCOPE
 )
