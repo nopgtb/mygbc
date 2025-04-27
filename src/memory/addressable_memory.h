@@ -29,42 +29,42 @@ class AddressableMemory{
     /// @details Returns the byte located at the given address. Address is zero-based indexed. 
     /// @param addr Zero based address.
     /// @return byte value located at the given address or error Status.
-    virtual StatusOr<uint8_t> get_byte(const uint16_t addr) const noexcept;
+    StatusOr<uint8_t> get_byte(const uint16_t addr) const noexcept;
 
     /// @brief Returns the word located at the given address.
     /// @details Returns the word located at the given address. Address is zero-based indexed. 
     /// @param addr Zero based address.
     /// @return Word value located at the given address or error Status.
-    virtual StatusOr<uint16_t> get_word(const uint16_t addr) const noexcept;
+    StatusOr<uint16_t> get_word(const uint16_t addr) const noexcept;
 
     /// @brief Allows read only access to the whole memory.
     /// @details Returns const reference to the memory.
     /// @return Const reference to the memory.
-    virtual const std::vector<uint8_t>& get_memory() const;
+    const std::vector<uint8_t>& get_memory() const;
 
     /// @brief Sets the byte located at the given address to the given value.
     /// @details Set the byte located at the given address to the given value. Address is zero-based indexed. 
     /// @param addr Zero based address.
     /// @param value Byte, New value.
     /// @return Returns status of the set
-    virtual Status set(const uint16_t addr, const uint8_t value) noexcept;
+    Status set(const uint16_t addr, const uint8_t value) noexcept;
 
     /// @brief Sets the word located at the given address to the given value.
     /// @details Set the word located at the given address to the given value. Address is zero-based indexed. 
     /// @param addr Zero based address.
     /// @param value Word, New value.
     /// @return Returns status of the set
-    virtual Status set(const uint16_t addr, const uint16_t value) noexcept;
+    Status set(const uint16_t addr, const uint16_t value) noexcept;
 
     /// @brief Sets the contents of the memory to the given value. Observes read_only flag.
     /// @details Sets the contents of the memory to the given value. Observes read_only flag.
     /// @param contents new contents of the memory
     /// @return Returns status of the set
-    virtual Status set_memory(const std::vector<uint8_t>& contents) noexcept;
+    Status set_memory(const std::vector<uint8_t>& contents) noexcept;
 
     /// @brief Frees the memory assosiated with the memory object.
     /// @details Frees the memory assosiated with the memory object.
-    virtual void free();
+    void free();
 
     /// @brief Flips the read only memory flag value.
     /// @param flag New read only flag value.

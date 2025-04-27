@@ -1,5 +1,4 @@
 #include "status.h" //Status
-#include <utility> //std::forward
 
 /// @brief Builds a OK status as default.
 /// @details Sets type_ to StatusType::UNKOWN and message to empty string.
@@ -45,7 +44,7 @@ Status Status::ok_status(){
 /// @param message Status message.
 /// @return UNKOWN status object.
 Status Status::unkown_error(const std::string& message){
-    return Status(Status::StatusType::UNKOWN, std::forward<const std::string>(message));
+    return Status(Status::StatusType::UNKOWN, message);
 }
 
 /// @brief Builds a status with IOERROR type and with given message.
@@ -53,7 +52,7 @@ Status Status::unkown_error(const std::string& message){
 /// @param message Status message.
 /// @return IOERROR status object.
 Status Status::io_error(const std::string& message){
-    return Status(Status::StatusType::IO_ERROR, std::forward<const std::string>(message));
+    return Status(Status::StatusType::IO_ERROR, message);
 }
 
 /// @brief Builds a status with PROTECTED_MEMORY_SET_ERROR type and with given message.
@@ -61,7 +60,7 @@ Status Status::io_error(const std::string& message){
 /// @param message Status message.
 /// @return PROTECTED_MEMORY_SET_ERROR status object.
 Status Status::protected_memory_set_error(const std::string& message){
-    return Status(Status::StatusType::PROTECTED_MEMORY_SET_ERROR, std::forward<const std::string>(message));
+    return Status(Status::StatusType::PROTECTED_MEMORY_SET_ERROR, message);
 }
 
 /// @brief Builds a status with INVALID_INDEX_ERROR type and with given message.
@@ -69,7 +68,7 @@ Status Status::protected_memory_set_error(const std::string& message){
 /// @param message Status message.
 /// @return INVALID_INDEX_ERROR status object.
 Status Status::invalid_index_error(const std::string& message){
-    return Status(Status::StatusType::INVALID_INDEX_ERROR, std::forward<const std::string>(message));
+    return Status(Status::StatusType::INVALID_INDEX_ERROR, message);
 }
 
 /// @brief Builds a status with INVALID_BINARY_ERROR type and with given message.
@@ -77,7 +76,7 @@ Status Status::invalid_index_error(const std::string& message){
 /// @param message Status message.
 /// @return INVALID_BINARY_ERROR status object.
 Status Status::invalid_binary_error(const std::string& message){
-    return Status(Status::StatusType::INVALID_BINARY_ERROR, std::forward<const std::string>(message));
+    return Status(Status::StatusType::INVALID_BINARY_ERROR, message);
 }
 
 /// @brief Builds a status with INVALID_INPUT_ERROR type and with given message.
@@ -85,7 +84,7 @@ Status Status::invalid_binary_error(const std::string& message){
 /// @param message Status message.
 /// @return INVALID_INPUT_ERROR status object.
 Status Status::invalid_input_error(const std::string& message){
-    return Status(Status::StatusType::INVALID_INPUT_ERROR, std::forward<const std::string>(message));
+    return Status(Status::StatusType::INVALID_INPUT_ERROR, message);
 }
 
 /// @brief Builds a status with INVALID_OPCODE_ERROR type and with given message.
@@ -93,5 +92,5 @@ Status Status::invalid_input_error(const std::string& message){
 /// @param message Status message.
 /// @return INVALID_OPCODE_ERROR status object.
 Status Status::invalid_opcode_error(const std::string& message){
-    return Status(Status::StatusType::INVALID_OPCODE_ERROR, std::forward<const std::string>(message));
+    return Status(Status::StatusType::INVALID_OPCODE_ERROR, message);
 }
