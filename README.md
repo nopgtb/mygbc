@@ -1,4 +1,4 @@
-# gbcemu
+# MyGBC
 Emulator for Gameboy color
 ## building using cmake
 ```

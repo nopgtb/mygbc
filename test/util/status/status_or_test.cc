@@ -11,7 +11,7 @@ TEST(StatusOrTest, built_from_value_and_fetch){
     const int default_value = 0x3;
 
     //Build value status
-    StatusOr<int> test_statusor(expected_value);
+    mygbc::StatusOr<int> test_statusor(expected_value);
     int fetched_value = 0;
     //Test ok status and value fetch
     ASSERT_EQ(test_statusor.ok(), expected_ok_status);
@@ -24,18 +24,18 @@ TEST(StatusOrTest, built_from_value_and_fetch){
 /// @details Tests that ok returns false correctly for bad access.
 TEST(StatusOrTest, built_from_status_and_fetch){
     const bool expected_ok_status = false;
-    const Status::StatusType expected_status = Status::StatusType::INVALID_INDEX_ERROR;
+    const mygbc::Status::StatusType expected_status = mygbc::Status::StatusType::INVALID_INDEX_ERROR;
     const std::string expected_message = "BadAccessTest";
     const int default_value = 0x3;
 
     //Build error StatusOr
-    StatusOr<int> test_statusor(Status::invalid_index_error(expected_message));
+    mygbc::StatusOr<int> test_statusor(mygbc::Status::invalid_index_error(expected_message));
     //Check that status matches expected values
     ASSERT_EQ(test_statusor.get_status().get_type(), expected_status);
     ASSERT_EQ(test_statusor.get_status().get_message(), expected_message);
     //Check that ok is false and access throws
     ASSERT_EQ(test_statusor.ok(), expected_ok_status);
-    ASSERT_THROW(test_statusor.value(), BadStatusOrAccess);
+    ASSERT_THROW(test_statusor.value(), mygbc::BadStatusOrAccess);
     //Check that valueor returns given default value
     ASSERT_EQ(test_statusor.value_or(default_value), default_value);
 }

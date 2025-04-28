@@ -12,7 +12,7 @@ class UtilCombinedCharBasedValueTest : public ::testing::TestWithParam<std::tupl
 TEST_P(UtilCombinedCharBasedValueTest, combine_value_test){
     std::tuple<std::tuple<uint8_t, uint8_t>, uint8_t> test_values = GetParam();
     const bool expected_ok_status = true;
-    StatusOr<uint8_t> result = Util::combined_char_based_value(
+    mygbc::StatusOr<uint8_t> result = mygbc::Util::combined_char_based_value(
         std::get<0>(std::get<0>(test_values)),
         std::get<1>(std::get<0>(test_values))
     );
@@ -52,9 +52,9 @@ INSTANTIATE_TEST_SUITE_P(
 /// @details combined_char_based_value gives error status when either of the value is less than 0x30 or more than 0x39.
 TEST(UtilCombinedCharBasedValueTest, error_status_on_invalid_values){
     const bool expected_ok_status = false;
-    const Status::StatusType expected_status = Status::StatusType::INVALID_INPUT_ERROR;
-    StatusOr<uint8_t> out_of_bound_value1 = Util::combined_char_based_value(0x29, 0x30);
-    StatusOr<uint8_t> out_of_bound_value2 = Util::combined_char_based_value(0x30, 0x29);
+    const mygbc::Status::StatusType expected_status = mygbc::Status::StatusType::INVALID_INPUT_ERROR;
+    mygbc::StatusOr<uint8_t> out_of_bound_value1 = mygbc::Util::combined_char_based_value(0x29, 0x30);
+    mygbc::StatusOr<uint8_t> out_of_bound_value2 = mygbc::Util::combined_char_based_value(0x30, 0x29);
     ASSERT_EQ(out_of_bound_value1.ok(), expected_ok_status);
     ASSERT_EQ(out_of_bound_value2.ok(), expected_ok_status);
     ASSERT_EQ(out_of_bound_value1.get_status().get_type(), expected_status);
@@ -68,7 +68,7 @@ class UtilTrimTrailingNullBytesTest : public ::testing::TestWithParam<std::tuple
 TEST_P(UtilTrimTrailingNullBytesTest, trim_test){
     std::tuple<std::string, std::string> test_values = GetParam();
     std::string trim_result = std::get<0>(test_values);
-    ASSERT_NO_THROW(trim_result = Util::trim_trailing_null_bytes(trim_result));
+    ASSERT_NO_THROW(trim_result = mygbc::Util::trim_trailing_null_bytes(trim_result));
     ASSERT_EQ(std::get<1>(test_values), trim_result);
 }
 

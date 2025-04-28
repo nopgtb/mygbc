@@ -36,8 +36,8 @@ class GBCBinaryMinimumBinarySizeEnforcedTest : public ::testing::TestWithParam<s
 TEST_P(GBCBinaryMinimumBinarySizeEnforcedTest, minimum_binary_size_enforced){
     std::vector<uint8_t> binary_data = GetParam();
     const bool expected_ok_status = false;
-    const Status::StatusType expected_status = Status::StatusType::INVALID_BINARY_ERROR;
-    StatusOr<GBCBinary> binary = GBCBinary::parse_bytes(binary_data);
+    const mygbc::Status::StatusType expected_status = mygbc::Status::StatusType::INVALID_BINARY_ERROR;
+    mygbc::StatusOr<mygbc::GBCBinary> binary = mygbc::GBCBinary::parse_bytes(binary_data);
     //Correctly fails invalid binary
     ASSERT_EQ(binary.ok(), expected_ok_status);
     ASSERT_EQ(binary.get_status().get_type(), expected_status);
@@ -61,7 +61,7 @@ class GBCBinaryValidSizeTest : public ::testing::TestWithParam<std::vector<uint8
 TEST_P(GBCBinaryValidSizeTest, valid_size_no_error){
     std::vector<uint8_t> binary_data = GetParam();
     const bool expected_ok_status = true;
-    StatusOr<GBCBinary> binary = GBCBinary::parse_bytes(binary_data);
+    mygbc::StatusOr<mygbc::GBCBinary> binary = mygbc::GBCBinary::parse_bytes(binary_data);
     //Parse result matches in size
     ASSERT_EQ(binary.ok(), expected_ok_status);
     ASSERT_EQ(binary.value().get_memory().size(), binary_data.size());
@@ -85,7 +85,7 @@ class GBCBinaryLogoTest : public ::testing::TestWithParam<std::tuple<std::vector
 TEST_P(GBCBinaryLogoTest, logo_validated_correctly){
     std::tuple<std::vector<uint8_t>, bool> test_data = GetParam();
     const bool expected_ok_status = true;
-    StatusOr<GBCBinary> binary = GBCBinary::parse_bytes(std::get<0>(test_data));
+    mygbc::StatusOr<mygbc::GBCBinary> binary = mygbc::GBCBinary::parse_bytes(std::get<0>(test_data));
     //Parses ok
     ASSERT_EQ(binary.ok(), expected_ok_status);
     //Logo check result matches expected
@@ -154,7 +154,7 @@ class GBCBinaryHeaderValidityTest : public ::testing::TestWithParam<std::tuple<s
 TEST_P(GBCBinaryHeaderValidityTest, header_validated_correctly){
     std::tuple<std::vector<uint8_t>, bool> test_data = GetParam();
     const bool expected_ok_status = true;
-    StatusOr<GBCBinary> binary = GBCBinary::parse_bytes(std::get<0>(test_data));
+    mygbc::StatusOr<mygbc::GBCBinary> binary = mygbc::GBCBinary::parse_bytes(std::get<0>(test_data));
     //Parses ok
     ASSERT_EQ(binary.ok(), expected_ok_status);
     //header check result matches expected
@@ -195,14 +195,14 @@ INSTANTIATE_TEST_SUITE_P(
     )
 );
 
-class GBCBinaryHeaderParsingTest : public ::testing::TestWithParam<std::tuple<std::vector<uint8_t>, GBCBinary::GBCBinaryHeaderData>> {};
+class GBCBinaryHeaderParsingTest : public ::testing::TestWithParam<std::tuple<std::vector<uint8_t>, mygbc::GBCBinary::GBCBinaryHeaderData>> {};
 
 /// @brief Checks that GBCBinary::parse_bytes validates the header (0x134=>0x14F) in the binary correctly.
 /// @details  GBCBinary::parse_bytes should return a object with correct header_validity flag for the input.
 TEST_P(GBCBinaryHeaderParsingTest, header_parsed_correctly){
-    std::tuple<std::vector<uint8_t>, GBCBinary::GBCBinaryHeaderData> test_data = GetParam();
+    std::tuple<std::vector<uint8_t>, mygbc::GBCBinary::GBCBinaryHeaderData> test_data = GetParam();
     const bool expected_ok_status = true;
-    StatusOr<GBCBinary> binary = GBCBinary::parse_bytes(std::get<0>(test_data));
+    mygbc::StatusOr<mygbc::GBCBinary> binary = mygbc::GBCBinary::parse_bytes(std::get<0>(test_data));
     //Parses ok
     ASSERT_EQ(binary.ok(), expected_ok_status);
     //header data matches expected
@@ -215,7 +215,7 @@ INSTANTIATE_TEST_SUITE_P(
     header_parsed_correctly_test_cases,
     GBCBinaryHeaderParsingTest,
     ::testing::Values(
-        std::make_tuple(std::vector<uint8_t>(OK_SIZE_FOR_BINARY, 0x0), GBCBinary::GBCBinaryHeaderData()), //Empty header
+        std::make_tuple(std::vector<uint8_t>(OK_SIZE_FOR_BINARY, 0x0), mygbc::GBCBinary::GBCBinaryHeaderData()), //Empty header
         std::make_tuple(
             insert_into_empty(
                 OK_SIZE_FOR_BINARY,
@@ -226,7 +226,7 @@ INSTANTIATE_TEST_SUITE_P(
                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
                 }
             ),
-            GBCBinary::GBCBinaryHeaderData("a", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+            mygbc::GBCBinary::GBCBinaryHeaderData("a", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         ), //title one letter, "a". rest 0
         std::make_tuple(
             insert_into_empty(
@@ -238,7 +238,7 @@ INSTANTIATE_TEST_SUITE_P(
                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
                 }
             ),
-            GBCBinary::GBCBinaryHeaderData("abcdefghijklmnop", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+            mygbc::GBCBinary::GBCBinaryHeaderData("abcdefghijklmnop", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         ), //title 16 letters, "abcdefghjklmno". rest 0. gameboy_type byte taken by title(WIKI).
         std::make_tuple(
             insert_into_empty(
@@ -250,7 +250,7 @@ INSTANTIATE_TEST_SUITE_P(
                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
                 }
             ),
-            GBCBinary::GBCBinaryHeaderData("", 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+            mygbc::GBCBinary::GBCBinaryHeaderData("", 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         ), //gameboy_type value present
         std::make_tuple(
             insert_into_empty(
@@ -262,7 +262,7 @@ INSTANTIATE_TEST_SUITE_P(
                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
                 }
             ),
-            GBCBinary::GBCBinaryHeaderData("abcdefghijklmno", 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+            mygbc::GBCBinary::GBCBinaryHeaderData("abcdefghijklmno", 0x80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         ), //title 15 letters, "abcdefghjklmno". gameboy_type value present (Not part of title).
         std::make_tuple(
             insert_into_empty(
@@ -274,7 +274,7 @@ INSTANTIATE_TEST_SUITE_P(
                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
                 }
             ),
-            GBCBinary::GBCBinaryHeaderData("", 0, 71, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+            mygbc::GBCBinary::GBCBinaryHeaderData("", 0, 71, 0, 0, 0, 0, 0, 0, 0, 0, 0)
         ), //licensee new (2 bytes, interpeted as ASCII and combined into number)
         std::make_tuple(
             insert_into_empty(
@@ -286,7 +286,7 @@ INSTANTIATE_TEST_SUITE_P(
                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
                 }
             ),
-            GBCBinary::GBCBinaryHeaderData("", 0, 0, 0x03, 0, 0, 0, 0, 0, 0, 0, 0)
+            mygbc::GBCBinary::GBCBinaryHeaderData("", 0, 0, 0x03, 0, 0, 0, 0, 0, 0, 0, 0)
         ), //Super gameboy compatability flag, 0x03 == Supported
         std::make_tuple(
             insert_into_empty(
@@ -298,7 +298,7 @@ INSTANTIATE_TEST_SUITE_P(
                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
                 }
             ),
-            GBCBinary::GBCBinaryHeaderData("", 0, 0, 0, 0x01, 0, 0, 0, 0, 0, 0, 0)
+            mygbc::GBCBinary::GBCBinaryHeaderData("", 0, 0, 0, 0x01, 0, 0, 0, 0, 0, 0, 0)
         ), //Cartridge type, 0x01 == MBC1
         std::make_tuple(
             insert_into_empty(
@@ -310,7 +310,7 @@ INSTANTIATE_TEST_SUITE_P(
                     0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
                 }
             ),
-            GBCBinary::GBCBinaryHeaderData("", 0, 0, 0, 0, 0x01, 0, 0, 0, 0, 0, 0)
+            mygbc::GBCBinary::GBCBinaryHeaderData("", 0, 0, 0, 0, 0x01, 0, 0, 0, 0, 0, 0)
         ), //Rom size
         std::make_tuple(
             insert_into_empty(
@@ -322,7 +322,7 @@ INSTANTIATE_TEST_SUITE_P(
                     0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00
                 }
             ),
-            GBCBinary::GBCBinaryHeaderData("", 0, 0, 0, 0, 0, 0x01, 0, 0, 0, 0, 0)
+            mygbc::GBCBinary::GBCBinaryHeaderData("", 0, 0, 0, 0, 0, 0x01, 0, 0, 0, 0, 0)
         ), //Ram size
         std::make_tuple(
             insert_into_empty(
@@ -334,7 +334,7 @@ INSTANTIATE_TEST_SUITE_P(
                     0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00
                 }
             ),
-            GBCBinary::GBCBinaryHeaderData("", 0, 0, 0, 0, 0, 0, 0x01, 0, 0, 0, 0)
+            mygbc::GBCBinary::GBCBinaryHeaderData("", 0, 0, 0, 0, 0, 0, 0x01, 0, 0, 0, 0)
         ), //Japanese market code, 0x01 == Non japanese market
         std::make_tuple(
             insert_into_empty(
@@ -346,7 +346,7 @@ INSTANTIATE_TEST_SUITE_P(
                     0x00, 0x00, 0x00, 0x33, 0x00, 0x00, 0x00, 0x00
                 }
             ),
-            GBCBinary::GBCBinaryHeaderData("", 0, 0, 0, 0, 0, 0, 0, 0x33, 0, 0, 0)
+            mygbc::GBCBinary::GBCBinaryHeaderData("", 0, 0, 0, 0, 0, 0, 0, 0x33, 0, 0, 0)
         ), //Licensee code old, 0x33 == New used
         std::make_tuple(
             insert_into_empty(
@@ -358,7 +358,7 @@ INSTANTIATE_TEST_SUITE_P(
                     0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00
                 }
             ),
-            GBCBinary::GBCBinaryHeaderData("", 0, 0, 0, 0, 0, 0, 0, 0, 0x01, 0, 0)
+            mygbc::GBCBinary::GBCBinaryHeaderData("", 0, 0, 0, 0, 0, 0, 0, 0, 0x01, 0, 0)
         ), //Rom mask version
         std::make_tuple(
             insert_into_empty(
@@ -370,7 +370,7 @@ INSTANTIATE_TEST_SUITE_P(
                     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x51, 0x37
                 }
             ),
-            GBCBinary::GBCBinaryHeaderData("", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x5137)
+            mygbc::GBCBinary::GBCBinaryHeaderData("", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0x5137)
         ) //Global checksum
     )
 );

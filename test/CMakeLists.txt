@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.22.1)
 
-set(THIS gbcemu_test)
-set(THIS_LIB libgbcemu)
+set(THIS mygbc_test)
+set(THIS_LIB libmygbc)
 
 set(TEST_SOURCES
     memory/gbc_binary_test.cc
@@ -10,6 +10,7 @@ set(TEST_SOURCES
     util/util_test.cc
     util/status/status_test.cc
     util/status/status_or_test.cc
+    instruction_set_lr35902/instruction_decoder_lr35902_test.cc
 )
 
 add_executable(${THIS} ${TEST_SOURCES})

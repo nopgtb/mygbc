@@ -10,14 +10,14 @@ class RegisterReadBitsTest : public ::testing::TestWithParam<std::tuple<std::vec
 TEST_P(RegisterReadBitsTest, read_bits_test){
     const bool expected_ok_status = true;
     std::tuple<std::vector<bool>, uint16_t> test_values = GetParam();
-    Register A;
+    mygbc::Register A;
     uint16_t test_pattern = std::get<1>(test_values);
     A.set(0, test_pattern);
     std::vector<bool> expected = std::get<0>(test_values);
     //Go trough each bit and see if they match
     for (int byte_index = 0; byte_index < 2; ++byte_index){
         for(int bit_index = 0; bit_index < 8; ++bit_index){
-            StatusOr<bool> read_result = A.get_bit(byte_index, bit_index);
+            mygbc::StatusOr<bool> read_result = A.get_bit(byte_index, bit_index);
             ASSERT_EQ(read_result.ok(), expected_ok_status);
             ASSERT_EQ(read_result.value(), expected[(byte_index*8) + bit_index]);
         }
@@ -53,8 +53,8 @@ INSTANTIATE_TEST_SUITE_P(
 /// @details Test all the edge cases for unaceptable indexes to registry bit read
 TEST(RegisterReadBitsTest, invalid_index_bit_read_test){
     const bool expected_ok_status = false;
-    const Status::StatusType expected_status = Status::StatusType::INVALID_INDEX_ERROR;
-    Register A;
+    const mygbc::Status::StatusType expected_status = mygbc::Status::StatusType::INVALID_INDEX_ERROR;
+    mygbc::Register A;
     uint16_t test_pattern = 0x0000;
     A.set(0, test_pattern);
 
@@ -67,7 +67,7 @@ TEST(RegisterReadBitsTest, invalid_index_bit_read_test){
     for(int i = 0; i < invalid_indexes.size(); ++i){
         uint8_t byte_index = std::get<0>(invalid_indexes[i]);
         uint8_t bit_index = std::get<1>(invalid_indexes[i]);
-        StatusOr<bool> read_result = A.get_bit(byte_index, bit_index);
+        mygbc::StatusOr<bool> read_result = A.get_bit(byte_index, bit_index);
         //Check that read fails with correct status
         ASSERT_EQ(read_result.ok(), expected_ok_status);
         ASSERT_EQ(read_result.get_status().get_type(), expected_status);
@@ -97,13 +97,13 @@ class RegisterWriteBitsTest : public ::testing::TestWithParam<RegisterWriteBitsT
 /// @details Checks that Register delivers right value when reading bits.
 TEST_P(RegisterWriteBitsTest, write_bits_test){
     RegisterWriteBitsTestTestData test_values = GetParam();
-    Register A;
+    mygbc::Register A;
     bool expected_ok_status = true;
-    Status initial_write = A.set(0x0, test_values.initial_value);
+    mygbc::Status initial_write = A.set(0x0, test_values.initial_value);
     ASSERT_EQ(initial_write.ok(), expected_ok_status);
-    Status bit_set = A.set_bit(test_values.byte_index, test_values.bit_index, test_values.set_value);
+    mygbc::Status bit_set = A.set_bit(test_values.byte_index, test_values.bit_index, test_values.set_value);
     ASSERT_EQ(bit_set.ok(), expected_ok_status);
-    StatusOr<uint16_t> read_result = A.get_word(0x0);
+    mygbc::StatusOr<uint16_t> read_result = A.get_word(0x0);
     ASSERT_EQ(read_result.ok(), expected_ok_status);
     ASSERT_EQ(read_result.value(), test_values.expected_value);
 }
@@ -154,8 +154,8 @@ INSTANTIATE_TEST_SUITE_P(
 /// @brief Test that write bit returns error on invalid byte and bit indexes
 /// @details Test all the edge cases for unaceptable indexes to registry bit write
 TEST(RegisterWriteBitsTest, invalid_index_bit_write_test){
-    const Status::StatusType expected_status = Status::StatusType::INVALID_INDEX_ERROR;
-    Register A;
+    const mygbc::Status::StatusType expected_status = mygbc::Status::StatusType::INVALID_INDEX_ERROR;
+    mygbc::Register A;
     uint16_t test_pattern = 0x0000;
     A.set(0, test_pattern);
 
@@ -168,7 +168,7 @@ TEST(RegisterWriteBitsTest, invalid_index_bit_write_test){
     for(int i = 0; i < invalid_indexes.size(); ++i){
         uint8_t byte_index = std::get<0>(invalid_indexes[i]);
         uint8_t bit_index = std::get<1>(invalid_indexes[i]);
-        Status write_test = A.set_bit(byte_index, bit_index, false);
+        mygbc::Status write_test = A.set_bit(byte_index, bit_index, false);
         //Check that write fails with correct status
         ASSERT_EQ(write_test.get_type(), expected_status);
     }

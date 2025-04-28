@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.22.1)
-set(THIS gbcemu)
-set(THIS_LIB libgbcemu)
+set(THIS mygbc)
+set(THIS_LIB libmygbc)
 
 project(${THIS} CXX)
 set(CMAKE_CXX_STANDARD 20)
