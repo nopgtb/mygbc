@@ -2,3 +2,4 @@
 *.gb
 bin/*
 build/*
+*.log
