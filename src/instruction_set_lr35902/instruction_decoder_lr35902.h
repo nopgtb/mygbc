@@ -22,7 +22,7 @@ namespace mygbc{
             /// @return Decoded instruction or error status
             template <typename T>
             requires std::derived_from<T, AddressableMemory>
-            static StatusOr<InstructionLR35902> decode(const T& memory, const uint16_t address, const InstructionSetLR35902& instruction_set) noexcept{
+            static StatusOr<InstructionLR35902> decode(T& memory, const uint16_t address, const InstructionSetLR35902& instruction_set) noexcept{
                 StatusOr<InstructionLR35902> instruction_fetch = get_instruction_from_address(memory, address, instruction_set);
                 if(instruction_fetch.ok()){
                     InstructionLR35902 instruction = instruction_fetch.value();
@@ -34,12 +34,12 @@ namespace mygbc{
                             instruction.read_value = value_fetch.value();
                         }
                         else{
-                            return value_fetch.get_status();
+                            return value_fetch.status();
                         }
                     }
                     return instruction;
                 }
-                return instruction_fetch.get_status();
+                return instruction_fetch.status();
             }
 
             private:
@@ -52,7 +52,7 @@ namespace mygbc{
             /// @return Instruction information or error status.
             template<typename T>
             requires std::derived_from<T, AddressableMemory>
-            static StatusOr<InstructionLR35902> get_instruction_from_address(const T& memory, const uint16_t address, const InstructionSetLR35902& instruction_set) noexcept{
+            static StatusOr<InstructionLR35902> get_instruction_from_address(T& memory, const uint16_t address, const InstructionSetLR35902& instruction_set) noexcept{
                 StatusOr<uint8_t> non_prefixed_opcode_fetch = memory.get_byte(address);
                 if(non_prefixed_opcode_fetch.ok()){
                     uint16_t opcode = static_cast<uint16_t>(non_prefixed_opcode_fetch.value());
@@ -62,14 +62,14 @@ namespace mygbc{
                         StatusOr<uint16_t> prefixed_opcode_fetch = memory.get_word(address);
                         //If we could not read the word, return the status of the read
                         if(!prefixed_opcode_fetch.ok()){
-                            return prefixed_opcode_fetch.get_status();
+                            return prefixed_opcode_fetch.status();
                         }
                         opcode = prefixed_opcode_fetch.value();
                     }
                     //Fetch details from the instruction set
                     return instruction_set.get_by_opcode(opcode);
                 }
-                return non_prefixed_opcode_fetch.get_status();
+                return non_prefixed_opcode_fetch.status();
             }
 
             /// @brief Fetches the value present at the given address.
@@ -81,19 +81,19 @@ namespace mygbc{
             /// @return Value or error status.
             template<typename T>
             requires std::derived_from<T, AddressableMemory>
-            static StatusOr<uint16_t> get_value_from_address(const T& memory, const uint16_t address, const uint8_t value_size_in_bytes) noexcept{
+            static StatusOr<uint16_t> get_value_from_address(T& memory, const uint16_t address, const uint8_t value_size_in_bytes) noexcept{
                 uint16_t value = 0;
                 if(value_size_in_bytes > 1){
                     StatusOr<uint16_t> word_fetch_result = memory.get_word(address);
                     if(!word_fetch_result.ok()){
-                        return word_fetch_result.get_status();
+                        return word_fetch_result.status();
                     }
                     value = word_fetch_result.value();
                 }
                 else{
                     StatusOr<uint8_t> byte_fetch_result = memory.get_byte(address);
                     if(!byte_fetch_result.ok()){
-                        return byte_fetch_result.get_status();
+                        return byte_fetch_result.status();
                     }
                     value = static_cast<uint8_t>(byte_fetch_result.value());
                 }
