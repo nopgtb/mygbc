@@ -1,11 +1,10 @@
-#include "gbc_binary.h" //GBCBinary
-#include "../util/util.h" //Util
 #include <algorithm> //std::equal
 #include <cstring> //std::memcpy
 #include <sstream> //std::ostringstream
 #include <iomanip> //std::hex, std::setw, std::setfill
 #include <map> //std::map
-#include <iostream>
+#include "gbc_binary.h" //GBCBinary
+#include "../util/util.h" //Util
 
 namespace mygbc{
 
@@ -73,9 +72,9 @@ namespace mygbc{
             valid_header.ok()
         ){
             return GBCBinary(
-                header_data.value(),
-                valid_logo.value(),
-                valid_header.value(),
+                std::move(header_data).value(),
+                std::move(valid_logo).value(),
+                std::move(valid_header).value(),
                 byte_buffer
             );
         }
@@ -226,6 +225,18 @@ namespace mygbc{
     {
     }
 
+    /// @brief Initializes GBCBinary with values.
+    /// @param header Parsed header data of the binary.
+    /// @param valid_logo Logo status of the binary.
+    /// @param valid_header Was header validated succesfull using the checksum?
+    /// @param byte_buffer Bytes of the binary.
+    /// @details Initializes GBCBinary with values.
+    GBCBinary::GBCBinary(const GBCBinary::GBCBinaryHeaderData&& header, const bool&& valid_logo, const bool&& valid_header, const std::vector<uint8_t>& byte_buffer)
+    :AddressableMemory(byte_buffer, false), binary_header_data_(std::move(header)), has_valid_header_(std::move(valid_header)), has_valid_logo_(std::move(valid_logo))
+    {
+    }
+
+
     /// @brief Getter for the binary headerdata variable (see struct `GBCBinaryHeaderData`).
     /// @details Returns the headerdata available for the binary.
     /// @return headerdata available for the binary (see struct `GBCBinaryHeaderData`).
@@ -250,9 +261,9 @@ namespace mygbc{
     /// @brief Gets the logo status and header data as a string representation.
     /// @details Gets the logo status and header data as a string representation. Does not include byte contents of binary.
     /// @return Binary header and logo status represented as string.
-    std::string GBCBinary::to_string() const{
+    std::string GBCBinary::to_string(){
         std::ostringstream str_builder;
-        str_builder << "Binary size in bytes: " << get_memory().size() << "\n";
+        str_builder << "Binary size in bytes: " << get_memory_size() << "\n";
         str_builder << "Logo status: " << (has_valid_logo_ ? "valid" : "not valid") << "\n";
         str_builder << "Header status: " << (has_valid_header_ ? "valid" : "not valid") << "\n";
         str_builder << "Binary title: " << binary_header_data_.title << "\n";

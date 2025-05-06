@@ -1,6 +1,5 @@
 #include "addressable_memory.h" //AddressableMemory
 #include "../util/util.h" //Util
-#include <cstring> //std::memcpy
 
 namespace mygbc{
 
@@ -13,20 +12,8 @@ namespace mygbc{
     /// @details Setter constructor, sets read only flag to false.
     /// @param memory Contents of the addressable memory
     /// @param read_only Is the memory read only?
-    AddressableMemory::AddressableMemory(const std::vector<uint8_t> & memory, const bool read_only):memory_(memory), read_only_memory_(read_only){
-    }
-
-    /// @brief Default deconstructor
-    /// @details Calls free as default behaviour
-    AddressableMemory::~AddressableMemory(){
-        free();
-    }
-
-    /// @brief Flips the read only memory flag value.
-    /// @param flag New read only flag value.
-    /// @details Flips the read only memory flag value.
-    void AddressableMemory::set_read_only_flag(bool flag) noexcept{
-        read_only_memory_ = flag;
+    AddressableMemory::AddressableMemory(const std::vector<uint8_t> & memory, const bool read_only)
+    :memory_(memory), read_only_memory_(read_only), memory_mutex_(std::make_shared<std::shared_mutex>()){
     }
 
     /// @brief Returns the read only memory flag.
@@ -40,7 +27,8 @@ namespace mygbc{
     /// @details Returns the byte located at the given address. Address is zero-based indexed. 
     /// @param addr Zero based address.
     /// @return byte value located at the given address or error Status.
-    StatusOr<uint8_t> AddressableMemory::get_byte(const uint16_t addr) const noexcept{
+    StatusOr<uint8_t> AddressableMemory::get_byte(const uint16_t addr) noexcept{
+        std::shared_lock<std::shared_mutex> read_lock(*memory_mutex_);
         if(addr < memory_.size()){
             return memory_[addr];
         }
@@ -54,7 +42,8 @@ namespace mygbc{
     /// @details Returns the word located at the given address. Address is zero-based indexed. 
     /// @param addr Zero based address.
     /// @return Word value located at the given address or error Status.
-    StatusOr<uint16_t> AddressableMemory::get_word(const uint16_t addr) const noexcept{
+    StatusOr<uint16_t> AddressableMemory::get_word(const uint16_t addr) noexcept{
+        std::shared_lock<std::shared_mutex> read_lock(*memory_mutex_);
         const uint16_t byte_one_addr = addr;
         const uint16_t byte_two_addr = addr + 1;
         if(byte_two_addr < memory_.size()){
@@ -67,11 +56,19 @@ namespace mygbc{
         );
     }
 
-    /// @brief Allows read only access to the whole memory.
-    /// @details Returns const reference to the memory.
-    /// @return Const reference to the memory.
-    const std::vector<uint8_t>& AddressableMemory::get_memory() const{
+    /// @brief Allows access to the whole memory.
+    /// @details Returns copy of the memory.
+    /// @return copy of the memory.
+    std::vector<uint8_t> AddressableMemory::get_memory(){
+        std::shared_lock<std::shared_mutex> read_lock(*memory_mutex_);
         return memory_;
+    }
+
+    /// @brief Returns the current size of the memory in bytes
+    /// @return Size of the memory in bytes.
+    std::size_t AddressableMemory::get_memory_size(){
+        std::shared_lock<std::shared_mutex> read_lock(*memory_mutex_);
+        return memory_.size();
     }
 
     /// @brief Sets the byte located at the given address to the given value.
@@ -79,7 +76,8 @@ namespace mygbc{
     /// @param addr Zero based address.
     /// @param value Byte, New value.
     /// @return Returns status of the set
-    Status AddressableMemory::set(const uint16_t addr, const uint8_t value) noexcept{
+    Status AddressableMemory::set_byte(const uint16_t addr, const uint8_t value) noexcept{
+        std::unique_lock<std::shared_mutex> write_lock(*memory_mutex_);
         if(addr < memory_.size()){
             if(!is_read_only()){
                 memory_[addr] = value;
@@ -98,7 +96,8 @@ namespace mygbc{
     /// @param addr Zero based address.
     /// @param value Word, New value.
     /// @return Returns status of the set
-    Status AddressableMemory::set(const uint16_t addr, const uint16_t value) noexcept{
+    Status AddressableMemory::set_word(const uint16_t addr, const uint16_t value) noexcept{
+        std::unique_lock<std::shared_mutex> write_lock(*memory_mutex_);
         const uint16_t first_byte_addr = addr;
         const uint16_t second_byte_addr = addr + 1;
         if(second_byte_addr < memory_.size()){
@@ -122,6 +121,7 @@ namespace mygbc{
     /// @param contents new contents of the memory
     /// @return Returns status of the set
     Status AddressableMemory::set_memory(const std::vector<uint8_t>& contents) noexcept{
+        std::unique_lock<std::shared_mutex> write_lock(*memory_mutex_);
         if(!is_read_only()){
             memory_ = contents;
             return Status::ok_status();
@@ -132,9 +132,9 @@ namespace mygbc{
     /// @brief Frees the memory assosiated with the memory object.
     /// @details Frees the memory assosiated with the memory object.
     void AddressableMemory::free(){
+        std::unique_lock<std::shared_mutex> write_lock(*memory_mutex_);
         memory_.clear();
         memory_.shrink_to_fit();
-        read_only_memory_ = false;
     }
 
 }//namespace_mygbc

@@ -1,12 +1,12 @@
 #ifndef GBC_BINARY_H
 #define GBC_BINARY_H
 
-#include "addressable_memory.h" //AddressableMemory
-#include "../util/status/status.h" //Status
-#include "../util/status/status_or.h" //StatusOr
 #include <vector> //std::vector
 #include <string> //std::string
 #include <cstdint> //Fixed lenght variables
+#include "addressable_memory.h" //AddressableMemory
+#include "../util/status/status.h" //Status
+#include "../util/status/status_or.h" //StatusOr
 
 namespace mygbc{
 
@@ -80,6 +80,15 @@ namespace mygbc{
             /// @param byte_buffer Bytes of the binary.
             GBCBinary(const GBCBinary::GBCBinaryHeaderData& header, const bool valid_logo, const bool valid_header, const std::vector<uint8_t>& byte_buffer);
 
+            /// @brief Initializes GBCBinary with values.
+            /// @details Initializes GBCBinary with values.
+            /// @param header Parsed header data of the binary.
+            /// @param valid_logo Logo status of the binary.
+            /// @param valid_header Was header validated succesfull using the checksum?
+            /// @param byte_buffer Bytes of the binary.
+            GBCBinary(const GBCBinary::GBCBinaryHeaderData&& header, const bool&& valid_logo, const bool&& valid_header, const std::vector<uint8_t>& byte_buffer);
+
+
             /// @brief Getter for the binary headerdata variable (see struct `GBCBinaryHeaderData`).
             /// @details Returns the headerdata available for the binary.
             /// @return headerdata available for the binary (see struct `GBCBinaryHeaderData`).
@@ -98,7 +107,7 @@ namespace mygbc{
             /// @brief Gets the logo status and header data as a string representation.
             /// @brief Gets the logo status and header data as a string representation. Does not include byte contents of binary.
             /// @return Binary header and logo status represented as string.
-            std::string to_string() const;
+            std::string to_string();
         private:
 
             /// @brief Checks if the logo is correct in byte_buffer.
@@ -120,13 +129,13 @@ namespace mygbc{
             static StatusOr<GBCBinary::GBCBinaryHeaderData> extract_header_data(const std::vector<uint8_t>& byte_buffer) noexcept;
 
             //headerdata extracted from the binary
-            GBCBinary::GBCBinaryHeaderData binary_header_data_;
+            const GBCBinary::GBCBinaryHeaderData binary_header_data_;
 
             //Was header validated succesfull using the checksum?
-            bool has_valid_header_;
+            const bool has_valid_header_;
 
             //Is the logo valid (0x104 => 0x133)
-            bool has_valid_logo_;
+            const bool has_valid_logo_;
     };
 
 }//namespace_mygbc

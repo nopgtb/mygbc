@@ -2,7 +2,10 @@
 #define ADDRESSABLE_MEMORY_H
 
 #include <vector> //std::vector
+#include <mutex> //std::unique_lock
+#include <memory> //std::shared_ptr
 #include <cstdint> //Fixed lenght variables
+#include <shared_mutex> //std::shared_mutex
 #include "../util/status/status.h" //Status
 #include "../util/status/status_or.h" //StatusOr
 
@@ -22,41 +25,41 @@ namespace mygbc{
         /// @param memory Contents of the addressable memory
         /// @param read_only Is the memory read only?
         AddressableMemory(const std::vector<uint8_t> & memory, const bool read_only);
-
-        /// @brief Default deconstructor
-        /// @details Calls free as default behaviour
-        ~AddressableMemory();
         
         /// @brief Returns the byte located at the given address.
         /// @details Returns the byte located at the given address. Address is zero-based indexed. 
         /// @param addr Zero based address.
         /// @return byte value located at the given address or error Status.
-        StatusOr<uint8_t> get_byte(const uint16_t addr) const noexcept;
+        StatusOr<uint8_t> get_byte(const uint16_t addr) noexcept;
 
         /// @brief Returns the word located at the given address.
         /// @details Returns the word located at the given address. Address is zero-based indexed. 
         /// @param addr Zero based address.
         /// @return Word value located at the given address or error Status.
-        StatusOr<uint16_t> get_word(const uint16_t addr) const noexcept;
+        StatusOr<uint16_t> get_word(const uint16_t addr) noexcept;
 
-        /// @brief Allows read only access to the whole memory.
-        /// @details Returns const reference to the memory.
-        /// @return Const reference to the memory.
-        const std::vector<uint8_t>& get_memory() const;
+        /// @brief Allows access to the whole memory.
+        /// @details Returns copy of the memory.
+        /// @return copy of the memory.
+        std::vector<uint8_t> get_memory();
+
+        /// @brief Returns the current size of the memory in bytes
+        /// @return Size of the memory in bytes.
+        std::size_t get_memory_size();
 
         /// @brief Sets the byte located at the given address to the given value.
         /// @details Set the byte located at the given address to the given value. Address is zero-based indexed. 
         /// @param addr Zero based address.
         /// @param value Byte, New value.
         /// @return Returns status of the set
-        Status set(const uint16_t addr, const uint8_t value) noexcept;
+        Status set_byte(const uint16_t addr, const uint8_t value) noexcept;
 
         /// @brief Sets the word located at the given address to the given value.
         /// @details Set the word located at the given address to the given value. Address is zero-based indexed. 
         /// @param addr Zero based address.
         /// @param value Word, New value.
         /// @return Returns status of the set
-        Status set(const uint16_t addr, const uint16_t value) noexcept;
+        Status set_word(const uint16_t addr, const uint16_t value) noexcept;
 
         /// @brief Sets the contents of the memory to the given value. Observes read_only flag.
         /// @details Sets the contents of the memory to the given value. Observes read_only flag.
@@ -68,11 +71,6 @@ namespace mygbc{
         /// @details Frees the memory assosiated with the memory object.
         void free();
 
-        /// @brief Flips the read only memory flag value.
-        /// @param flag New read only flag value.
-        /// @details Flips the read only memory flag value.
-        void set_read_only_flag(bool flag) noexcept;
-
         /// @brief Returns the read only memory flag.
         /// @details Returns the read only memory flag.
         /// @return The read only memory flag.
@@ -83,7 +81,10 @@ namespace mygbc{
             std::vector<uint8_t> memory_;
 
             //Read only memory flag (ROM/RAM)
-            bool read_only_memory_;
+            const bool read_only_memory_;
+
+            //Read/Write mutex. shared_ptr so its movable
+            std::shared_ptr<std::shared_mutex> memory_mutex_;
     };
 
 }//namespace_mygbc
