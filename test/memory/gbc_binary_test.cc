@@ -40,7 +40,7 @@ TEST_P(GBCBinaryMinimumBinarySizeEnforcedTest, minimum_binary_size_enforced){
     mygbc::StatusOr<mygbc::GBCBinary> binary = mygbc::GBCBinary::parse_bytes(binary_data);
     //Correctly fails invalid binary
     ASSERT_EQ(binary.ok(), expected_ok_status);
-    ASSERT_EQ(binary.get_status().get_type(), expected_status);
+    ASSERT_EQ(binary.status().code(), expected_status);
 }
 
 /// @brief Initantiazation of minimum_binary_size_enforced.
@@ -61,10 +61,11 @@ class GBCBinaryValidSizeTest : public ::testing::TestWithParam<std::vector<uint8
 TEST_P(GBCBinaryValidSizeTest, valid_size_no_error){
     std::vector<uint8_t> binary_data = GetParam();
     const bool expected_ok_status = true;
-    mygbc::StatusOr<mygbc::GBCBinary> binary = mygbc::GBCBinary::parse_bytes(binary_data);
+    mygbc::StatusOr<mygbc::GBCBinary> binary_fetch = mygbc::GBCBinary::parse_bytes(binary_data);
     //Parse result matches in size
-    ASSERT_EQ(binary.ok(), expected_ok_status);
-    ASSERT_EQ(binary.value().get_memory().size(), binary_data.size());
+    ASSERT_EQ(binary_fetch.ok(), expected_ok_status);
+    mygbc::GBCBinary binary = std::move(binary_fetch).value();
+    ASSERT_EQ(binary.get_memory_size(), binary_data.size());
 }
 
 /// @brief Initantiazation of valid_size_no_error.

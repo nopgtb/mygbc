@@ -57,8 +57,8 @@ TEST(UtilCombinedCharBasedValueTest, error_status_on_invalid_values){
     mygbc::StatusOr<uint8_t> out_of_bound_value2 = mygbc::Util::combined_char_based_value(0x30, 0x29);
     ASSERT_EQ(out_of_bound_value1.ok(), expected_ok_status);
     ASSERT_EQ(out_of_bound_value2.ok(), expected_ok_status);
-    ASSERT_EQ(out_of_bound_value1.get_status().get_type(), expected_status);
-    ASSERT_EQ(out_of_bound_value2.get_status().get_type(), expected_status);
+    ASSERT_EQ(out_of_bound_value1.status().code(), expected_status);
+    ASSERT_EQ(out_of_bound_value2.status().code(), expected_status);
 }
 
 class UtilTrimTrailingNullBytesTest : public ::testing::TestWithParam<std::tuple<std::string, std::string>> {};

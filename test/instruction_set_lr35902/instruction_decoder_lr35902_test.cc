@@ -29,17 +29,17 @@ INSTANTIATE_TEST_SUITE_P(
         //No read
         std::make_tuple(
             mygbc::AddressableMemory(std::vector<uint8_t>{0x76}, false), //HALT
-            mygbc::InstructionLR35902(0x0076,1,std::vector<mygbc::InstructionLR35902::OperandRegister>{},std::vector<mygbc::InstructionLR35902::OperandConstValue>{},false, 0, 0, mygbc::InstructionLR35902::OperandValueInterpHint::NONE,mygbc::InstructionLR35902::ExecutionCondition::NONE,"HALT","HALT",4,0,mygbc::InstructionLR35902::FlagOperation::NO_CHANGE,mygbc::InstructionLR35902::FlagOperation::NO_CHANGE,mygbc::InstructionLR35902::FlagOperation::NO_CHANGE,mygbc::InstructionLR35902::FlagOperation::NO_CHANGE)
+            mygbc::InstructionLR35902(0x0076,1,std::vector<mygbc::InstructionLR35902::OperandRegister>{},std::vector<mygbc::InstructionLR35902::OperandConstValue>{},false, 0, 0, mygbc::InstructionLR35902::OperandValueInterpHint::NONE,mygbc::InstructionLR35902::ExecutionCondition::NONE,"HALT","HALT","HALT",std::vector<uint8_t>{4},mygbc::InstructionLR35902::FlagOperation::NO_CHANGE,mygbc::InstructionLR35902::FlagOperation::NO_CHANGE,mygbc::InstructionLR35902::FlagOperation::NO_CHANGE,mygbc::InstructionLR35902::FlagOperation::NO_CHANGE)
         ),
         //1 byte read
         std::make_tuple(
             mygbc::AddressableMemory(std::vector<uint8_t>{0x30, 0xF0}, false), //JR NC, e8
-            mygbc::InstructionLR35902(0x0030,2,std::vector<mygbc::InstructionLR35902::OperandRegister>{},std::vector<mygbc::InstructionLR35902::OperandConstValue>{},true, 1, 1, 0x00F0, mygbc::InstructionLR35902::OperandValueInterpHint::SIGNED,mygbc::InstructionLR35902::ExecutionCondition::CARRY_NOT_SET,"JR","JR e8",12,8,mygbc::InstructionLR35902::FlagOperation::NO_CHANGE,mygbc::InstructionLR35902::FlagOperation::NO_CHANGE,mygbc::InstructionLR35902::FlagOperation::NO_CHANGE,mygbc::InstructionLR35902::FlagOperation::NO_CHANGE)
+            mygbc::InstructionLR35902(0x0030,2,std::vector<mygbc::InstructionLR35902::OperandRegister>{},std::vector<mygbc::InstructionLR35902::OperandConstValue>{},true, 1, 1, 0xF0, mygbc::InstructionLR35902::OperandValueInterpHint::SIGNED,mygbc::InstructionLR35902::ExecutionCondition::CARRY_NOT_SET,"JR","JR NC, e8","JR NC, %1",std::vector<uint8_t>{12,8},mygbc::InstructionLR35902::FlagOperation::NO_CHANGE,mygbc::InstructionLR35902::FlagOperation::NO_CHANGE,mygbc::InstructionLR35902::FlagOperation::NO_CHANGE,mygbc::InstructionLR35902::FlagOperation::NO_CHANGE)
         ),
         //2 byte read
         std::make_tuple(
             mygbc::AddressableMemory(std::vector<uint8_t>{0x11, 0xF0, 0xA0}, false), //LD DE, n16 
-            mygbc::InstructionLR35902(0x0011,3,std::vector<mygbc::InstructionLR35902::OperandRegister>{mygbc::InstructionLR35902::OperandRegister("DE", 0, false, false, false, false)},std::vector<mygbc::InstructionLR35902::OperandConstValue>{},true, 2, 1, 0xF0A0, mygbc::InstructionLR35902::OperandValueInterpHint::VALUE,mygbc::InstructionLR35902::ExecutionCondition::NONE,"LD","LD DE, n16",12,0,mygbc::InstructionLR35902::FlagOperation::NO_CHANGE,mygbc::InstructionLR35902::FlagOperation::NO_CHANGE,mygbc::InstructionLR35902::FlagOperation::NO_CHANGE,mygbc::InstructionLR35902::FlagOperation::NO_CHANGE)
+            mygbc::InstructionLR35902(0x0011,3,std::vector<mygbc::InstructionLR35902::OperandRegister>{mygbc::InstructionLR35902::OperandRegister("DE", 0, false, false, false, false)},std::vector<mygbc::InstructionLR35902::OperandConstValue>{},true, 2, 1, 0xF0A0, mygbc::InstructionLR35902::OperandValueInterpHint::VALUE,mygbc::InstructionLR35902::ExecutionCondition::NONE,"LD","LD DE, n16","LD DE, %1",std::vector<uint8_t>{12},mygbc::InstructionLR35902::FlagOperation::NO_CHANGE,mygbc::InstructionLR35902::FlagOperation::NO_CHANGE,mygbc::InstructionLR35902::FlagOperation::NO_CHANGE,mygbc::InstructionLR35902::FlagOperation::NO_CHANGE)
         )
     )
 );
@@ -59,7 +59,7 @@ TEST_P(InstructionDecoderInvalidTest, instruction_decode_invalid_instruction){
     mygbc::Status::StatusType expected_status = mygbc::Status::StatusType::INVALID_OPCODE_ERROR;
     mygbc::StatusOr<mygbc::InstructionLR35902> fetch_value = mygbc::InstructionDecoderLR35902::decode(std::get<0>(test_values), read_address, instruction_set_);
     ASSERT_EQ(fetch_value.ok(), expected_ok_status);
-    ASSERT_EQ(fetch_value.get_status().get_type(), expected_status);
+    ASSERT_EQ(fetch_value.status().code(), expected_status);
 }
 
 /// @brief Initantiazation of instruction_decode_invalid_instruction.

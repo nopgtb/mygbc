@@ -29,8 +29,8 @@ TEST_P(StatusBuildTest, status_build_correctly){
 
     //Test that expectations match reality
     ASSERT_EQ(built_status.ok(), expected_values.expected_ok_status);
-    ASSERT_EQ(built_status.get_type(), expected_values.expected_type);
-    ASSERT_EQ(built_status.get_message(), expected_values.expected_message);
+    ASSERT_EQ(built_status.code(), expected_values.expected_type);
+    ASSERT_EQ(built_status.message(), expected_values.expected_message);
 }
 
 /// @brief Initantiazation of status_build_correctly.
@@ -49,6 +49,7 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_tuple(mygbc::Status::invalid_index_error("invalid_index_error"), StatusBuildTestExpectedValues(mygbc::Status::StatusType::INVALID_INDEX_ERROR, "invalid_index_error", false)),//invalid_index_error_status test
         std::make_tuple(mygbc::Status::invalid_binary_error("invalid_binary_error"), StatusBuildTestExpectedValues(mygbc::Status::StatusType::INVALID_BINARY_ERROR, "invalid_binary_error", false)),//invalid_binary_error_status test
         std::make_tuple(mygbc::Status::invalid_input_error("invalid_input_error"), StatusBuildTestExpectedValues(mygbc::Status::StatusType::INVALID_INPUT_ERROR, "invalid_input_error", false)),//invalid_input_error_status test
-        std::make_tuple(mygbc::Status::invalid_opcode_error("invalid_opcode_error"), StatusBuildTestExpectedValues(mygbc::Status::StatusType::INVALID_OPCODE_ERROR, "invalid_opcode_error", false))//invalid_opcode_error_status test
+        std::make_tuple(mygbc::Status::invalid_opcode_error("invalid_opcode_error"), StatusBuildTestExpectedValues(mygbc::Status::StatusType::INVALID_OPCODE_ERROR, "invalid_opcode_error", false)),//invalid_opcode_error_status test
+        std::make_tuple(mygbc::Status::invalid_register_id_error("invalid_register_id_error"), StatusBuildTestExpectedValues(mygbc::Status::StatusType::INVALID_REGISTER_ID_ERROR, "invalid_register_id_error", false))//invalid_register_id_error_status test
     )
 );

@@ -17,7 +17,6 @@ TEST(StatusOrTest, built_from_value_and_fetch){
     ASSERT_EQ(test_statusor.ok(), expected_ok_status);
     ASSERT_NO_THROW(fetched_value = test_statusor.value()); //No badaccess exception
     ASSERT_EQ(fetched_value, expected_value);
-    ASSERT_EQ(test_statusor.value_or(default_value), expected_value);
 }
 
 /// @brief Tests building StatusOr from error Status, Status is returned correctly with correct values and that fetching value throws
@@ -31,12 +30,10 @@ TEST(StatusOrTest, built_from_status_and_fetch){
     //Build error StatusOr
     mygbc::StatusOr<int> test_statusor(mygbc::Status::invalid_index_error(expected_message));
     //Check that status matches expected values
-    ASSERT_EQ(test_statusor.get_status().get_type(), expected_status);
-    ASSERT_EQ(test_statusor.get_status().get_message(), expected_message);
+    ASSERT_EQ(test_statusor.status().code(), expected_status);
+    ASSERT_EQ(test_statusor.status().message(), expected_message);
     //Check that ok is false and access throws
     ASSERT_EQ(test_statusor.ok(), expected_ok_status);
     ASSERT_THROW(test_statusor.value(), mygbc::BadStatusOrAccess);
-    //Check that valueor returns given default value
-    ASSERT_EQ(test_statusor.value_or(default_value), default_value);
 }
 

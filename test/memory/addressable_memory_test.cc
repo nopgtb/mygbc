@@ -50,7 +50,7 @@ TEST(AddressableMemoryReadTest, read_byte_invalid_addr_test){
     const mygbc::Status::StatusType expected_status = mygbc::Status::StatusType::INVALID_INDEX_ERROR;
     mygbc::StatusOr<uint8_t> read_result = memory.get_byte(read_addr);
     ASSERT_EQ(read_result.ok(), ok_status_expected);
-    ASSERT_EQ(read_result.get_status().get_type(), expected_status);
+    ASSERT_EQ(read_result.status().code(), expected_status);
 }
 
 /// @brief Checks that AddressableMemory fetches word sized data correctly.
@@ -74,7 +74,7 @@ TEST(AddressableMemoryReadTest, read_word_invalid_addr_test){
     const mygbc::Status::StatusType expected_status = mygbc::Status::StatusType::INVALID_INDEX_ERROR;
     mygbc::StatusOr<uint16_t> read_result = memory.get_word(read_addr);
     ASSERT_EQ(read_result.ok(), ok_status_expected);
-    ASSERT_EQ(read_result.get_status().get_type(), expected_status);
+    ASSERT_EQ(read_result.status().code(), expected_status);
 }
 
 /// @brief Checks that AddressableMemory sets byte sized data correctly.
@@ -85,7 +85,7 @@ TEST(AddressableMemorySetTest, set_byte_test){
     const uint16_t set_addr = 0x01;
     const uint8_t set_value = 0x05;
     const bool ok_status_expected = true;
-    mygbc::Status write_result = memory.set(set_addr, set_value);
+    mygbc::Status write_result = memory.set_byte(set_addr, set_value);
     ASSERT_EQ(write_result.ok(), ok_status_expected);
     ASSERT_EQ(memory.get_memory(), expected_result);
 }
@@ -98,7 +98,7 @@ TEST(AddressableMemorySetTest, set_word_test){
     const uint16_t set_addr = 0x01;
     const uint16_t set_value = 0x0504;
     const bool ok_status_expected = true;
-    mygbc::Status write_result = memory.set(set_addr, set_value);
+    mygbc::Status write_result = memory.set_word(set_addr, set_value);
     ASSERT_EQ(write_result.ok(), ok_status_expected);
     ASSERT_EQ(memory.get_memory(), expected_result);
 }
@@ -122,9 +122,9 @@ TEST(AddressableMemorySetTest, set_byte_protected_memory_test){
     const uint8_t set_value = 0x05;
     const bool ok_status_expected = false;
     const mygbc::Status::StatusType expected_status = mygbc::Status::StatusType::PROTECTED_MEMORY_SET_ERROR;
-    mygbc::Status write_result = memory.set(set_addr, set_value);
+    mygbc::Status write_result = memory.set_byte(set_addr, set_value);
     ASSERT_EQ(write_result.ok(), ok_status_expected);
-    ASSERT_EQ(write_result.get_type(), expected_status);
+    ASSERT_EQ(write_result.code(), expected_status);
 }
 
 /// @brief Checks that AddressableMemory gives error status when trying to set word in protected memory.
@@ -135,9 +135,9 @@ TEST(AddressableMemorySetTest, set_word_protected_memory_test){
     const uint16_t set_value = 0x0575;
     const bool ok_status_expected = false;
     const mygbc::Status::StatusType expected_status = mygbc::Status::StatusType::PROTECTED_MEMORY_SET_ERROR;
-    mygbc::Status write_result = memory.set(set_addr, set_value);
+    mygbc::Status write_result = memory.set_word(set_addr, set_value);
     ASSERT_EQ(write_result.ok(), ok_status_expected);
-    ASSERT_EQ(write_result.get_type(), expected_status);
+    ASSERT_EQ(write_result.code(), expected_status);
 }
 
 /// @brief Checks that AddressableMemory sets the whole memorydata correctly.
@@ -149,7 +149,7 @@ TEST(AddressableMemorySetTest, set_memory_protected_memory_test){
     const mygbc::Status::StatusType expected_status = mygbc::Status::StatusType::PROTECTED_MEMORY_SET_ERROR;
     mygbc::Status write_result = memory.set_memory(expected_result);
     ASSERT_EQ(write_result.ok(), ok_status_expected);
-    ASSERT_EQ(write_result.get_type(), expected_status);
+    ASSERT_EQ(write_result.code(), expected_status);
 }
 
 /// @brief Checks that AddressableMemory gives error status when trying to set byte with invalid addr.
@@ -160,9 +160,9 @@ TEST(AddressableMemorySetTest, set_byte_invalid_addr_test){
     const uint8_t set_value = 0x05;
     const bool ok_status_expected = false;
     const mygbc::Status::StatusType expected_status = mygbc::Status::StatusType::INVALID_INDEX_ERROR;
-    mygbc::Status write_result = memory.set(set_addr, set_value);
+    mygbc::Status write_result = memory.set_byte(set_addr, set_value);
     ASSERT_EQ(write_result.ok(), ok_status_expected);
-    ASSERT_EQ(write_result.get_type(), expected_status);
+    ASSERT_EQ(write_result.code(), expected_status);
 }
 
 /// @brief Checks that AddressableMemory gives error status when trying to set word with invalid addr.
@@ -173,9 +173,9 @@ TEST(AddressableMemorySetTest, set_word_invalid_addr_test){
     const uint16_t set_value = 0x0575;
     const bool ok_status_expected = false;
     const mygbc::Status::StatusType expected_status = mygbc::Status::StatusType::INVALID_INDEX_ERROR;
-    mygbc::Status write_result = memory.set(set_addr, set_value);
+    mygbc::Status write_result = memory.set_word(set_addr, set_value);
     ASSERT_EQ(write_result.ok(), ok_status_expected);
-    ASSERT_EQ(write_result.get_type(), expected_status);
+    ASSERT_EQ(write_result.code(), expected_status);
 }
 
 /// @brief Checks that AddressableMemory frees memory correctly.
@@ -186,14 +186,14 @@ TEST(AddressableMemoryTearDownTest, free_memory_test){
     ASSERT_EQ(memory.get_memory(), contents);
     memory.free();
     ASSERT_EQ(memory.get_memory(), std::vector<uint8_t>());
-    ASSERT_EQ(memory.get_memory().size(), 0);
+    ASSERT_EQ(memory.get_memory_size(), 0);
 }
 
 /// @brief Checks that AddressableMemory frees memory correctly.
 /// @details Used memory is freed correctly when .free is called.
-TEST(AddressableMemoryChangeProtectedMemoryFlag, ChangeProtectedMemoryFlag){
-    mygbc::AddressableMemory memory(std::vector<uint8_t>{0x00, 0x01, 0x02}, false);
-    ASSERT_EQ(memory.is_read_only(), false);
-    memory.set_read_only_flag(true);
-    ASSERT_EQ(memory.is_read_only(), true);
+TEST(AddressableMemoryChangeProtectedMemoryFlag, SetProtectedMemoryFlag){
+    mygbc::AddressableMemory not_protected(std::vector<uint8_t>{0x00, 0x01, 0x02}, false);
+    ASSERT_EQ(not_protected.is_read_only(), false);
+    mygbc::AddressableMemory protected_memory(std::vector<uint8_t>{0x00, 0x01, 0x02}, true);
+    ASSERT_EQ(protected_memory.is_read_only(), true);
 }

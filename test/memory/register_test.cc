@@ -1,18 +1,25 @@
-#include "../../src/memory/register.h" //Register
+#include "../../src/memory/register_16bit.h" //Register
 #include <gtest/gtest.h> //GTest
 #include <vector> //std::vector
 #include <tuple> //std::tuple
 
+/// @brief Checks that register size is 2 bytes.
+TEST(RegisterSizeTest, register_size_is_correct){
+    const int expected_register_size = 2;
+    mygbc::Register16Bit A;
+    ASSERT_EQ(A.get_memory_size(), expected_register_size);
+}
+
 class RegisterReadBitsTest : public ::testing::TestWithParam<std::tuple<std::vector<bool>, uint16_t>> {};
 
-/// @brief Checks that Register delivers right value when reading bits.
-/// @details Checks that Register delivers right value when reading bits.
+/// @brief Checks that Register16Bit delivers right value when reading bits.
+/// @details Checks that Register16Bit delivers right value when reading bits.
 TEST_P(RegisterReadBitsTest, read_bits_test){
     const bool expected_ok_status = true;
     std::tuple<std::vector<bool>, uint16_t> test_values = GetParam();
-    mygbc::Register A;
+    mygbc::Register16Bit A;
     uint16_t test_pattern = std::get<1>(test_values);
-    A.set(0, test_pattern);
+    A.set_word(test_pattern);
     std::vector<bool> expected = std::get<0>(test_values);
     //Go trough each bit and see if they match
     for (int byte_index = 0; byte_index < 2; ++byte_index){
@@ -54,9 +61,9 @@ INSTANTIATE_TEST_SUITE_P(
 TEST(RegisterReadBitsTest, invalid_index_bit_read_test){
     const bool expected_ok_status = false;
     const mygbc::Status::StatusType expected_status = mygbc::Status::StatusType::INVALID_INDEX_ERROR;
-    mygbc::Register A;
+    mygbc::Register16Bit A;
     uint16_t test_pattern = 0x0000;
-    A.set(0, test_pattern);
+    A.set_word(test_pattern);
 
     std::vector<std::tuple<uint8_t, uint8_t>> invalid_indexes = {
         std::make_tuple(0, 8), //Above accepted bit range, byte ok
@@ -70,7 +77,7 @@ TEST(RegisterReadBitsTest, invalid_index_bit_read_test){
         mygbc::StatusOr<bool> read_result = A.get_bit(byte_index, bit_index);
         //Check that read fails with correct status
         ASSERT_EQ(read_result.ok(), expected_ok_status);
-        ASSERT_EQ(read_result.get_status().get_type(), expected_status);
+        ASSERT_EQ(read_result.status().code(), expected_status);
     }
 }
 
@@ -93,19 +100,17 @@ struct RegisterWriteBitsTestTestData{
 };
 class RegisterWriteBitsTest : public ::testing::TestWithParam<RegisterWriteBitsTestTestData> {};
 
-/// @brief Checks that Register delivers right value when reading bits.
-/// @details Checks that Register delivers right value when reading bits.
+/// @brief Checks that Register16Bit delivers right value when reading bits.
+/// @details Checks that Register16Bit delivers right value when reading bits.
 TEST_P(RegisterWriteBitsTest, write_bits_test){
     RegisterWriteBitsTestTestData test_values = GetParam();
-    mygbc::Register A;
+    mygbc::Register16Bit A;
     bool expected_ok_status = true;
-    mygbc::Status initial_write = A.set(0x0, test_values.initial_value);
-    ASSERT_EQ(initial_write.ok(), expected_ok_status);
+    A.set_word(test_values.initial_value);
     mygbc::Status bit_set = A.set_bit(test_values.byte_index, test_values.bit_index, test_values.set_value);
     ASSERT_EQ(bit_set.ok(), expected_ok_status);
-    mygbc::StatusOr<uint16_t> read_result = A.get_word(0x0);
-    ASSERT_EQ(read_result.ok(), expected_ok_status);
-    ASSERT_EQ(read_result.value(), test_values.expected_value);
+    uint16_t read_result = A.get_word();
+    ASSERT_EQ(read_result, test_values.expected_value);
 }
 
 /// @brief Initantiazation of write_bits_test.
@@ -155,9 +160,9 @@ INSTANTIATE_TEST_SUITE_P(
 /// @details Test all the edge cases for unaceptable indexes to registry bit write
 TEST(RegisterWriteBitsTest, invalid_index_bit_write_test){
     const mygbc::Status::StatusType expected_status = mygbc::Status::StatusType::INVALID_INDEX_ERROR;
-    mygbc::Register A;
+    mygbc::Register16Bit A;
     uint16_t test_pattern = 0x0000;
-    A.set(0, test_pattern);
+    A.set_word(test_pattern);
 
     std::vector<std::tuple<uint8_t, uint8_t>> invalid_indexes = {
         std::make_tuple(0, 8), //Above accepted bit range, byte ok
@@ -170,6 +175,6 @@ TEST(RegisterWriteBitsTest, invalid_index_bit_write_test){
         uint8_t bit_index = std::get<1>(invalid_indexes[i]);
         mygbc::Status write_test = A.set_bit(byte_index, bit_index, false);
         //Check that write fails with correct status
-        ASSERT_EQ(write_test.get_type(), expected_status);
+        ASSERT_EQ(write_test.code(), expected_status);
     }
 }
