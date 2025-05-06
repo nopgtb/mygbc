@@ -1,12 +1,13 @@
 #ifndef UTIL_H
 #define UTIL_H
 
-#include "../util/status/status.h" //Status
-#include "../util/status/status_or.h" //StatusOr
 #include <cstdint> //Fixed lenght variables
 #include <string> //std::string
+#include "../util/status/status.h" //Status
+#include "../util/status/status_or.h" //StatusOr
 
 namespace mygbc{
+    
     /// @brief Contains assorted static utility functions
     class Util{
     public:
@@ -28,6 +29,10 @@ namespace mygbc{
         /// @param str string to be trimmed.
         /// @return the remaining string without the null bytes
         static std::string trim_trailing_null_bytes(const std::string& str);
+
+        /// @brief Returns current unix timestamp in string format.
+        /// @return current unix timestamp in string format.
+        static std::string get_unix_timestamp();
     };
 }//namespace_mygbc
 #endif

@@ -1,6 +1,7 @@
-#include "util.h" //Util
 #include <stdexcept> //std::out_of_range
 #include <algorithm> //std::find_if
+#include <chrono> //std::chrono
+#include "util.h" //Util
 
 namespace mygbc{
 
@@ -49,5 +50,13 @@ namespace mygbc{
             trim_result.end()
         );
         return trim_result;
+    }
+
+    /// @brief Returns current unix timestamp in string format.
+    /// @return current unix timestamp in string format.
+    std::string Util::get_unix_timestamp(){
+        return std::to_string(
+            std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count()
+        );
     }
 }//namespace_mygbc
