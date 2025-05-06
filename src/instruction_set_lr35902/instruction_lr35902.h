@@ -88,10 +88,10 @@ namespace mygbc{
         //Assembly mnemonic of opcode
         const std::string short_mnemonic;
         const std::string full_mnemonic;
+        const std::string replace_mnenomic;
 
         //Execute cycles
-        const uint8_t t_cycles_to_execute;
-        const uint8_t t_cycles_to_not_execute;
+        const std::vector<uint8_t> t_cycles_costs;
 
         /// @brief Initializes invalid InstructionLR35902.
         /// @details Uses the gap at 0xED.
@@ -108,9 +108,9 @@ namespace mygbc{
         /// @param r_val_interp_hint How to interpert the read value
         /// @param exec_cond Condition of the execution
         /// @param s_mnem Short ASM mnemonic, e.g. LD
-        /// @param f_mnem Full ASM mnemonic 
-        /// @param t_cyc_exec Cost in cycles to execute the instruction
-        /// @param t_cyc_not_exec Cost in cycles to not execute the instruction
+        /// @param f_mnem Full ASM mnemonic
+        /// @param r_mnem Full ASM mnenonic with convinient markers for read value placement. 
+        /// @param cycle_costs list of the costs assosiated with executing and skipping the instruction.
         /// @param eff_flag_z Effect on Zero flag
         /// @param eff_flag_n Effect on Subtract flag 
         /// @param eff_flag_h Effect on Half carry flag
@@ -127,8 +127,8 @@ namespace mygbc{
             const ExecutionCondition exec_cond,
             const std::string& s_mnem,
             const std::string& f_mnem,
-            const uint8_t t_cyc_exec,
-            const uint8_t t_cyc_not_exec,
+            const std::string& r_mnem,
+            const std::vector<uint8_t>& cycle_costs,
             const FlagOperation eff_flag_z,
             const FlagOperation eff_flag_n,
             const FlagOperation eff_flag_h,
@@ -148,8 +148,8 @@ namespace mygbc{
         /// @param exec_cond Condition of the execution
         /// @param s_mnem Short ASM mnemonic, e.g. LD
         /// @param f_mnem Full ASM mnemonic 
-        /// @param t_cyc_exec Cost in cycles to execute the instruction
-        /// @param t_cyc_not_exec Cost in cycles to not execute the instruction
+        /// @param r_mnem Full ASM mnenonic with convinient markers for read value placement. 
+        /// @param cycle_costs list of the costs assosiated with executing and skipping the instruction.
         /// @param eff_flag_z Effect on Zero flag
         /// @param eff_flag_n Effect on Subtract flag 
         /// @param eff_flag_h Effect on Half carry flag
@@ -167,8 +167,8 @@ namespace mygbc{
             const ExecutionCondition exec_cond,
             const std::string& s_mnem,
             const std::string& f_mnem,
-            const uint8_t t_cyc_exec,
-            const uint8_t t_cyc_not_exec,
+            const std::string& r_mnem,
+            const std::vector<uint8_t>& cycle_costs,
             const FlagOperation eff_flag_z,
             const FlagOperation eff_flag_n,
             const FlagOperation eff_flag_h,

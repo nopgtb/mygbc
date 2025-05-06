@@ -26,7 +26,7 @@ namespace mygbc{
     InstructionLR35902::InstructionLR35902()
     :opcode(0xED), size_in_bytes(0), operand_registers(), operand_const_values(), has_read_value(false),
     read_value_size_in_bytes(0), read_value_operand_position(0), read_value(0), read_value_operand_interp_hint(InstructionLR35902::OperandValueInterpHint::NONE),
-    execution_condition(InstructionLR35902::ExecutionCondition::NONE), short_mnemonic("ILLEGAL"), full_mnemonic("ILLEGAL"), t_cycles_to_execute(0), t_cycles_to_not_execute(0),
+    execution_condition(InstructionLR35902::ExecutionCondition::NONE), short_mnemonic("ILLEGAL"), full_mnemonic("ILLEGAL"), t_cycles_costs({0}),
     effect_on_flag_z(InstructionLR35902::FlagOperation::NO_CHANGE), effect_on_flag_n(InstructionLR35902::FlagOperation::NO_CHANGE), 
     effect_on_flag_h(InstructionLR35902::FlagOperation::NO_CHANGE), effect_on_flag_c(InstructionLR35902::FlagOperation::NO_CHANGE){
     }
@@ -43,8 +43,8 @@ namespace mygbc{
     /// @param exec_cond Condition of the execution
     /// @param s_mnem Short ASM mnemonic, e.g. LD
     /// @param f_mnem Full ASM mnemonic 
-    /// @param t_cyc_exec Cost in cycles to execute the instruction
-    /// @param t_cyc_not_exec Cost in cycles to not execute the instruction
+    /// @param r_mnem Full ASM mnenonic with convinient markers for read value placement. 
+    /// @param cycle_costs list of the costs assosiated with executing and skipping the instruction.
     /// @param eff_flag_z Effect on Zero flag
     /// @param eff_flag_n Effect on Subtract flag 
     /// @param eff_flag_h Effect on Half carry flag
@@ -61,8 +61,8 @@ namespace mygbc{
         const ExecutionCondition exec_cond,
         const std::string& s_mnem,
         const std::string& f_mnem,
-        const uint8_t t_cyc_exec,
-        const uint8_t t_cyc_not_exec,
+        const std::string& r_mnem,
+        const std::vector<uint8_t>& cycle_costs,
         const FlagOperation eff_flag_z,
         const FlagOperation eff_flag_n,
         const FlagOperation eff_flag_h,
@@ -70,7 +70,7 @@ namespace mygbc{
     )
     :opcode(op), size_in_bytes(byte_size), operand_registers(oper_reg), operand_const_values(oper_const), has_read_value(has_r_val),
     read_value_size_in_bytes(r_val_size), read_value_operand_position(r_val_pos), read_value(0), read_value_operand_interp_hint(r_val_interp_hint),
-    execution_condition(exec_cond), short_mnemonic(s_mnem), full_mnemonic(f_mnem), t_cycles_to_execute(t_cyc_exec), t_cycles_to_not_execute(t_cyc_not_exec),
+    execution_condition(exec_cond), short_mnemonic(s_mnem), full_mnemonic(f_mnem), replace_mnenomic(r_mnem), t_cycles_costs(cycle_costs),
     effect_on_flag_z(eff_flag_z), effect_on_flag_n(eff_flag_n), effect_on_flag_h(eff_flag_h), effect_on_flag_c(eff_flag_c){
     }
 
@@ -87,8 +87,8 @@ namespace mygbc{
     /// @param exec_cond Condition of the execution
     /// @param s_mnem Short ASM mnemonic, e.g. LD
     /// @param f_mnem Full ASM mnemonic 
-    /// @param t_cyc_exec Cost in cycles to execute the instruction
-    /// @param t_cyc_not_exec Cost in cycles to not execute the instruction
+    /// @param r_mnem Full ASM mnenonic with convinient markers for read value placement. 
+    /// @param cycle_costs list of the costs assosiated with executing and skipping the instruction.
     /// @param eff_flag_z Effect on Zero flag
     /// @param eff_flag_n Effect on Subtract flag 
     /// @param eff_flag_h Effect on Half carry flag
@@ -106,8 +106,8 @@ namespace mygbc{
         const ExecutionCondition exec_cond,
         const std::string& s_mnem,
         const std::string& f_mnem,
-        const uint8_t t_cyc_exec,
-        const uint8_t t_cyc_not_exec,
+        const std::string& r_mnem,
+        const std::vector<uint8_t>& cycle_costs,
         const FlagOperation eff_flag_z,
         const FlagOperation eff_flag_n,
         const FlagOperation eff_flag_h,
@@ -115,7 +115,7 @@ namespace mygbc{
     )
     :opcode(op), size_in_bytes(byte_size), operand_registers(oper_reg), operand_const_values(oper_const), has_read_value(has_r_val),
     read_value_size_in_bytes(r_val_size), read_value_operand_position(r_val_pos), read_value(r_val), read_value_operand_interp_hint(r_val_interp_hint),
-    execution_condition(exec_cond), short_mnemonic(s_mnem), full_mnemonic(f_mnem), t_cycles_to_execute(t_cyc_exec), t_cycles_to_not_execute(t_cyc_not_exec),
+    execution_condition(exec_cond), short_mnemonic(s_mnem), full_mnemonic(f_mnem), replace_mnenomic(r_mnem), t_cycles_costs(cycle_costs),
     effect_on_flag_z(eff_flag_z), effect_on_flag_n(eff_flag_n), effect_on_flag_h(eff_flag_h), effect_on_flag_c(eff_flag_c){
     }
 
