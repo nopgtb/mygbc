@@ -1,5 +1,5 @@
-#include "binary_reader.h" //BinaryReader
 #include <fstream> //std::ifstream
+#include "binary_reader.h" //BinaryReader
 
 namespace mygbc{
 
