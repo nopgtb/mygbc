@@ -23,14 +23,14 @@ namespace mygbc{
 
     /// @brief Returns the assosiated status message string.
     /// @return assosiated status message string.
-    const std::string& Status::get_message() const noexcept{
+    const std::string& Status::message() const noexcept{
         return message_;
     }
 
     /// @brief Returns the type of the status
     /// @details Getter for type_
     /// @return Type of the status (See Status::StatusType)  
-    const Status::StatusType& Status::get_type() const noexcept{
+    const Status::StatusType& Status::code() const noexcept{
         return type_;
     }
 
@@ -95,6 +95,14 @@ namespace mygbc{
     /// @return INVALID_OPCODE_ERROR status object.
     Status Status::invalid_opcode_error(const std::string& message){
         return Status(Status::StatusType::INVALID_OPCODE_ERROR, message);
+    }
+
+    /// @brief Builds a status with INVALID_REGISTER_ID_ERROR type and with given message.
+    /// @details Status is returned with INVALID_REGISTER_ID_ERROR type and given message.
+    /// @param message Status message.
+    /// @return INVALID_REGISTER_ID_ERROR status object.
+    Status Status::invalid_register_id_error(const std::string& message){
+        return Status(Status::StatusType::INVALID_REGISTER_ID_ERROR, message);
     }
             
 }//namespace_mygbc

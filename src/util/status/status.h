@@ -17,7 +17,8 @@ namespace mygbc{
                 INVALID_INDEX_ERROR = 4,
                 INVALID_BINARY_ERROR = 5,
                 INVALID_INPUT_ERROR = 6,
-                INVALID_OPCODE_ERROR = 7
+                INVALID_OPCODE_ERROR = 7,
+                INVALID_REGISTER_ID_ERROR = 8,
             };
 
             /// @brief Builds a UNKOWN status as default.
@@ -38,12 +39,12 @@ namespace mygbc{
             /// @brief Returns the assosiated status message string.
             /// @details Getter for message_
             /// @return assosiated status message string.
-            const std::string& get_message() const noexcept;
+            const std::string& message() const noexcept;
 
             /// @brief Returns the type of the status
             /// @details Getter for type_
             /// @return Type of the status (See Status::StatusType)  
-            const Status::StatusType& get_type() const noexcept;
+            const Status::StatusType& code() const noexcept;
 
             /// @brief Builds a status with OK type.
             /// @details Status is returned with OK type.
@@ -91,8 +92,14 @@ namespace mygbc{
             /// @param message Status message.
             /// @return INVALID_OPCODE_ERROR status object.
             static Status invalid_opcode_error(const std::string& message);
+
+            /// @brief Builds a status with INVALID_REGISTER_ID_ERROR type and with given message.
+            /// @details Status is returned with INVALID_REGISTER_ID_ERROR type and given message.
+            /// @param message Status message.
+            /// @return INVALID_REGISTER_ID_ERROR status object.
+            static Status invalid_register_id_error(const std::string& message);
+
         private:
-            
             StatusType type_;
             std::string message_;
     };
