@@ -5,6 +5,7 @@
 #include <map> //std::map
 #include "gbc_binary.h" //GBCBinary
 #include "../util/util.h" //Util
+#include "../util/external/crc32.h" //CRC32
 
 namespace mygbc{
 
@@ -86,25 +87,14 @@ namespace mygbc{
     /// @param byte_buffer std::vector buffer containing the binary bytes.
     /// @return Were the bytes 0x104=>0x133 present and presented a valid logo or error Status.
     StatusOr<bool> GBCBinary::check_logo_validity(const std::vector<uint8_t>& byte_buffer) noexcept{
-        const std::vector<uint8_t> logo_bytes = {
-            0xCE, 0xED, 0x66, 0x66, 0xCC, 0x0D, 0x00, 0x0B, 0x03,
-            0x73, 0x00, 0x83, 0x00, 0x0C, 0x00, 0x0D, 0x00, 0x08,
-            0x11, 0x1F, 0x88, 0x89, 0x00, 0x0E, 0xDC, 0xCC, 0x6E,
-            0xE6, 0xDD, 0xDD, 0xD9, 0x99, 0xBB, 0xBB, 0x67, 0x63,
-            0x6E, 0x0E, 0xEC, 0xCC, 0xDD, 0xDC, 0x99, 0x9F, 0xBB, 
-            0xB9, 0x33, 0x3E
-        };
+        //CRC32 checksum of the logo bytes, recreates the functionality.
+        const uint32_t logo_crc32 = 1176065047;
         //logo located at range 0x104 => 0x133
         const uint16_t logo_start_addr = 0x104;
         const uint16_t logo_end_addr = 0x134; //Exclusive in std::equal
         if(byte_buffer.size() >= logo_end_addr){
-            if (
-                std::equal(
-                    (byte_buffer.begin() + logo_start_addr), 
-                    (byte_buffer.begin() + logo_end_addr),
-                    logo_bytes.begin()
-                )
-            ){
+            //CRC32 the logo bytes
+            if (external::CRC32((byte_buffer.data() + logo_start_addr), (logo_end_addr - logo_start_addr)) == logo_crc32){
                 return true;
             }
             return false;
