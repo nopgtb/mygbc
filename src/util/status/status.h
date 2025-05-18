@@ -19,6 +19,7 @@ namespace mygbc{
                 INVALID_INPUT_ERROR = 6,
                 INVALID_OPCODE_ERROR = 7,
                 INVALID_REGISTER_ID_ERROR = 8,
+                INVALID_MEMORY_RANGE_ERROR = 9,
             };
 
             /// @brief Builds a UNKOWN status as default.
@@ -98,6 +99,12 @@ namespace mygbc{
             /// @param message Status message.
             /// @return INVALID_REGISTER_ID_ERROR status object.
             static Status invalid_register_id_error(const std::string& message);
+
+            /// @brief Builds a status with INVALID_MEMORY_RANGE_ERROR type and with given message.
+            /// @details Status is returned with INVALID_MEMORY_RANGE_ERROR type and given message.
+            /// @param message Status message.
+            /// @return INVALID_MEMORY_RANGE_ERROR status object.
+            static Status invalid_memory_range_error(const std::string& message);
 
         private:
             StatusType type_;

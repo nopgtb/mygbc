@@ -104,5 +104,13 @@ namespace mygbc{
     Status Status::invalid_register_id_error(const std::string& message){
         return Status(Status::StatusType::INVALID_REGISTER_ID_ERROR, message);
     }
+
+    /// @brief Builds a status with INVALID_MEMORY_RANGE_ERROR type and with given message.
+    /// @details Status is returned with INVALID_MEMORY_RANGE_ERROR type and given message.
+    /// @param message Status message.
+    /// @return INVALID_MEMORY_RANGE_ERROR status object.
+    Status Status::invalid_memory_range_error(const std::string& message){
+        return Status(Status::StatusType::INVALID_MEMORY_RANGE_ERROR, message);
+    }
             
 }//namespace_mygbc
