@@ -40,7 +40,7 @@ namespace mygbc{
             /// @brief Convert given LogSeverity into str representation of the name.
             /// @param severity Severity of the log event
             /// @return str representation of the name.
-            constexpr const char* log_severity_to_str(const LogMessage::LogSeverity severity);
+            const char* log_severity_to_str(const LogMessage::LogSeverity severity);
 
             std::stringstream message_stream_;
             LogSeverity severity_;

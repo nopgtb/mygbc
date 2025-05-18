@@ -33,7 +33,7 @@ namespace mygbc{
     /// @brief Convert given LogSeverity into str representation of the name.
     /// @param severity Severity of the log event
     /// @return str representation of the name.
-    constexpr const char* LogMessage::log_severity_to_str(const LogMessage::LogSeverity severity){
+    const char* LogMessage::log_severity_to_str(const LogMessage::LogSeverity severity){
         switch (severity)
         {
         case LogMessage::LogSeverity::INFO:
@@ -45,7 +45,7 @@ namespace mygbc{
         case LogMessage::LogSeverity::FATAL:
             return "FATAL";
         default:
-            return "UNKOWN";
+            return "UNKNOWN";
         }
     }
 
