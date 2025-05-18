@@ -1,8 +1,10 @@
 set(SRC_SOURCES
     src/main.cc
+    src/gbc.cc
     src/memory/addressable_memory.cc
     src/memory/gbc_binary.cc
     src/memory/register_16bit.cc
+    src/memory/memory_mapped_register_8bit.cc
     src/util/io/binary_reader.cc
     src/util/io/logger.cc
     src/util/io/log_message.cc
@@ -11,13 +13,20 @@ set(SRC_SOURCES
     src/util/status/bad_status_or_access.cc
     src/instruction_set_lr35902/instruction_lr35902.cc
     src/instruction_set_lr35902/instruction_set_lr35902.cc
+    src/instruction_set_lr35902/instruction_executor_lr35902.cc
+    src/components/lr35902_register_file.cc
+    src/components/lr35902.cc
+    src/components/memory_controller.cc
     PARENT_SCOPE
 )
 
 set(SRC_HEADERS
+    src/gbc.h
     src/memory/addressable_memory.h
     src/memory/gbc_binary.h
     src/memory/register_16bit.h
+    src/memory/system_memory_interface.h
+    src/memory/memory_mapped_register_8bit.h
     src/util/io/binary_reader.h
     src/util/io/logger.h
     src/util/io/log_message.h
@@ -25,8 +34,13 @@ set(SRC_HEADERS
     src/util/status/status_or.h
     src/util/status/status.h
     src/util/status/bad_status_or_access.h
+    src/util/external/crc32.h
     src/instruction_set_lr35902/instruction_lr35902.h
     src/instruction_set_lr35902/instruction_decoder_lr35902.h
+    src/instruction_set_lr35902/instruction_executor_lr35902.h
     src/instruction_set_lr35902/instruction_set_lr35902.h
+    src/components/lr35902_register_file.h
+    src/components/lr35902.h
+    src/components/memory_controller.h
     PARENT_SCOPE
 )
