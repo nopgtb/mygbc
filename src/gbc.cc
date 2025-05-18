@@ -6,8 +6,8 @@ namespace mygbc{
     /// @return 
     Status GBC::init(){
         run_flag_.store(true);
+        
     }
-
 
     /// @brief Runs the main loop of the GBC.
     /// @return Exit status of the GBC.
@@ -15,10 +15,10 @@ namespace mygbc{
         StatusOr<uint8_t> instruction_emulation;
         while(run_flag_.load()){
             instruction_emulation = processing_unit.fetch_decode_execute(memory_controller_);
-            if(instruction_emulation.ok()){
-
+            if(!instruction_emulation.ok()){
+                return instruction_emulation.status();
             }
-            return instruction_emulation.status();
+            
         }
     }
 

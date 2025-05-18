@@ -3,6 +3,9 @@
 #include "memory/gbc_binary.h" //GBCBinary
 #include "instruction_set_lr35902/instruction_decoder_lr35902.h" //InstructionDecoderLR35902
 #include "util/io/logger.h"//Logger
+#include "gbc.h" //GBC
+#include "util/external/crc32.h"
+#include <cstring>
 
 int main(int argc, char* argv[]){
     //Init log file
@@ -31,6 +34,8 @@ int main(int argc, char* argv[]){
                     else{
                         std::cout << "Could not decode instruction from address " << cartridge_entry_point << ", got status " << std::to_string(static_cast<int>(instruction.status().code()));
                     }
+                    mygbc::GBC emulator;
+                    
                 }
                 else{
                     std::cout << "Failed to parse as GBCBinary! \n";
