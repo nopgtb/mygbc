@@ -35,6 +35,12 @@ namespace mygbc{
         //Mnemonic => Execute function jump table
         std::unordered_map<std::string, std::function<StatusOr<uint8_t>(const InstructionLR35902&, LR35902RegisterFile&, MemoryController&)>> jump_map_;
 
+        /// @brief Checks the common flag conditionals: Z, C, NZ, NC
+        /// @param instruction Instruction info
+        /// @param register_file Cpu register file
+        /// @return Is the flag condition met that is specified by the instruction?
+        static StatusOr<bool> helper_common_flag_check(const InstructionLR35902& instruction, LR35902RegisterFile& register_file);
+
         /// @brief Executor for all of the JP instructions
         /// @details Handles and executes all of the absolute jump variations
         /// @param instruction JP variation
@@ -43,6 +49,45 @@ namespace mygbc{
         /// @return Execution time in ticks or Status if can't execute.
         static StatusOr<uint8_t> exec_jp(const InstructionLR35902& instruction, LR35902RegisterFile& register_file, MemoryController& memory_controller);
 
+        /// @brief Executor for all of the JR instructions
+        /// @details Handles and executes all of the relative jump variations
+        /// @param instruction JR variation
+        /// @param register_file CPU register file
+        /// @param memory_controller Memory access
+        /// @return Execution time in ticks or Status if can't execute.
+        static StatusOr<uint8_t> exec_jr(const InstructionLR35902& instruction, LR35902RegisterFile& register_file, MemoryController& memory_controller);
+
+        /// @brief Executor for all of the CALL instructions
+        /// @details Handles and executes all of the subroutine calls
+        /// @param instruction CALL variation
+        /// @param register_file CPU register file
+        /// @param memory_controller Memory access
+        /// @return Execution time in ticks or Status if can't execute.
+        static StatusOr<uint8_t> exec_call(const InstructionLR35902& instruction, LR35902RegisterFile& register_file, MemoryController& memory_controller);
+
+        /// @brief Executor for all of the RET instructions
+        /// @details Handles and executes all of the returns from subroutines
+        /// @param instruction RET variation
+        /// @param register_file CPU register file
+        /// @param memory_controller Memory access
+        /// @return Execution time in ticks or Status if can't execute.
+        static StatusOr<uint8_t> exec_ret(const InstructionLR35902& instruction, LR35902RegisterFile& register_file, MemoryController& memory_controller);
+
+        /// @brief Executor for all of the RETI instructions
+        /// @details Handles and executes of the return from subroutine while enabling interupts
+        /// @param instruction RETI variation
+        /// @param register_file CPU register file
+        /// @param memory_controller Memory access
+        /// @return Execution time in ticks or Status if can't execute.
+        static StatusOr<uint8_t> exec_reti(const InstructionLR35902& instruction, LR35902RegisterFile& register_file, MemoryController& memory_controller);
+
+        /// @brief Executor for all of the LD instructions
+        /// @details Handles and executes of load instructions
+        /// @param instruction LD variation
+        /// @param register_file CPU register file
+        /// @param memory_controller Memory access
+        /// @return Execution time in ticks or Status if can't execute.
+        static StatusOr<uint8_t> exec_ld(const InstructionLR35902& instruction, LR35902RegisterFile& register_file, MemoryController& memory_controller);
 
     };
 }//namespace_mygbc
