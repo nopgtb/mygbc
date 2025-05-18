@@ -1,13 +1,14 @@
 #ifndef INSTRUCTION_DECODER_LR35902_H
 #define INSTRUCTION_DECODER_LR35902_H
 
-#include "../memory/addressable_memory.h" //AddressableMemory
-#include "../util/status/status_or.h" //StatusOr
-#include "instruction_set_lr35902.h" //InstructionSetLR35902
 #include <cstdint> //Fixed lenght variables
 #include <vector> //std::vector
 #include <string> //std::string
-#include <concepts> //std::constructible_from
+#include <type_traits> //std::constructible_from
+#include "../memory/system_memory_interface.h" //MemoryInterface
+#include "../components/memory_controller.h" //MemoryController
+#include "../util/status/status_or.h" //StatusOr
+#include "instruction_set_lr35902.h" //InstructionSetLR35902
 
 namespace mygbc{
 
@@ -16,12 +17,12 @@ namespace mygbc{
         public:
             /// @brief Tries to decode the instruction from the given address.
             /// @details If the given address is not valid instruction returns a status
-            /// @tparam T typename derived from AddressableMemory for read functions.
+            /// @tparam T typename implementing the SystemMemoryInterfaceConcept concept.
             /// @param memory AddressableMemory derived container
             /// @param address Address of the instruction
             /// @return Decoded instruction or error status
             template <typename T>
-            requires std::derived_from<T, AddressableMemory>
+            requires (std::is_same_v<T, MemoryController> || SystemMemoryInterfaceConcept<T>)
             static StatusOr<InstructionLR35902> decode(T& memory, const uint16_t address, const InstructionSetLR35902& instruction_set) noexcept{
                 StatusOr<InstructionLR35902> instruction_fetch = get_instruction_from_address(memory, address, instruction_set);
                 if(instruction_fetch.ok()){
@@ -46,12 +47,12 @@ namespace mygbc{
 
             /// @brief Fetches the instruction info matching to the opcode present at the given address.
             /// @details If memory fetches or opcode at the address is invalid returns error state.
-            /// @tparam T typename derived from AddressableMemory for read functions.
+            /// @tparam T T typename implementing the SystemMemoryInterfaceConcept concept.
             /// @param memory AddressableMemory derived container.
             /// @param address Address of the instruction.
             /// @return Instruction information or error status.
-            template<typename T>
-            requires std::derived_from<T, AddressableMemory>
+            template <typename T>
+            requires (std::is_same_v<T, MemoryController> || SystemMemoryInterfaceConcept<T>)
             static StatusOr<InstructionLR35902> get_instruction_from_address(T& memory, const uint16_t address, const InstructionSetLR35902& instruction_set) noexcept{
                 StatusOr<uint8_t> non_prefixed_opcode_fetch = memory.get_byte(address);
                 if(non_prefixed_opcode_fetch.ok()){
@@ -74,13 +75,13 @@ namespace mygbc{
 
             /// @brief Fetches the value present at the given address.
             /// @details If memory fetches at the address fails returns error state.
-            /// @tparam T typename derived from AddressableMemory for read functions.
+            /// @tparam T T typename implementing the SystemMemoryInterfaceConcept concept.
             /// @param memory AddressableMemory derived container.
             /// @param address Address of the value.
             /// @param value_size_in_bytes size of the read value.
             /// @return Value or error status.
-            template<typename T>
-            requires std::derived_from<T, AddressableMemory>
+            template <typename T>
+            requires (std::is_same_v<T, MemoryController> || SystemMemoryInterfaceConcept<T>)
             static StatusOr<uint16_t> get_value_from_address(T& memory, const uint16_t address, const uint8_t value_size_in_bytes) noexcept{
                 uint16_t value = 0;
                 if(value_size_in_bytes > 1){
