@@ -1,4 +1,5 @@
 #include "../../src/instruction_set_lr35902/instruction_decoder_lr35902.h" //Instruction*LR35902
+#include "../../src/memory/addressable_memory.h" //AddressableMemory
 #include <gtest/gtest.h> //GTest
 #include <string> //std::string
 #include <tuple> //std::tuple
