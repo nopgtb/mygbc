@@ -6,14 +6,16 @@
 #include <memory> //std::shared_ptr
 #include <cstdint> //Fixed lenght variables
 #include <shared_mutex> //std::shared_mutex
+#include "system_memory_interface.h"
 #include "../util/status/status.h" //Status
 #include "../util/status/status_or.h" //StatusOr
+
 
 namespace mygbc{
 
     /// @brief Interface class for all addressable memory.
     /// @details Interface class for all addressable memory. Contains functionality for read only memory.
-    class AddressableMemory{
+    class AddressableMemory : public SystemMemoryInterface{
         public:
 
         /// @brief Default constructor
@@ -85,6 +87,7 @@ namespace mygbc{
 
             //Read/Write mutex. shared_ptr so its movable
             std::shared_ptr<std::shared_mutex> memory_mutex_;
+
     };
 
 }//namespace_mygbc
