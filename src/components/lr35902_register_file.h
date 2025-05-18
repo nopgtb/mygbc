@@ -2,18 +2,22 @@
 #define LR35902_REGISTER_FILE_H
 
 #include <unordered_map> //std::unordered_map
+#include <atomic> //std::atomic
 #include <string> //std::string
+#include "../memory/memory_mapped_register_8bit.h" //MemoryMappedRegister8Bit
 #include "../memory/register_16bit.h" //Register16Bit
 
 namespace mygbc{
     struct LR35902RegisterFile{
-        Register16Bit ir_ie;
-        Register16Bit a_f;
+        std::atomic<bool> ime; //Interupt master enable
+        MemoryMappedRegister8Bit ie; //Interupt enable register
+        MemoryMappedRegister8Bit ir; //Interupt flag register (IF), avoiding c++ collision with ir.
+        Register16Bit a_f; //Accumilator and flag register
         Register16Bit b_c;
         Register16Bit d_e;
         Register16Bit h_l;
-        Register16Bit pc;
-        Register16Bit sp;
+        Register16Bit pc; //Program counter
+        Register16Bit sp; //Stack pointer
 
         //Flag registry index
         const uint8_t lower_eight_index;

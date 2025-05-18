@@ -8,6 +8,7 @@
 namespace mygbc{
 
     /// @brief Represents a 16-bit wide register.
+    /// @details Inherits the SystemMemoryInterface but isnt compatible with it.
     class Register16Bit : public AddressableMemory{
         public:
             /// @brief Sets up a 16-bit register (8-byte pair)
@@ -27,13 +28,27 @@ namespace mygbc{
             /// @return Status of the set.
             Status set_bit(const uint8_t byte_index, const uint8_t bit_index, const bool bit_value) noexcept;
 
-            /// @brief Returns the contents of the registry as a word.
+            /// @brief allow access to the original get_word for convinience.
+            using AddressableMemory::get_word;
+
+            /// @brief Returns the contents of the registry as a word, helper wrapper.
             /// @return Word value.
             uint16_t get_word() noexcept;
 
-            /// @brief Sets the value of the register.
+            /// @brief allow access to the original set_word for convinience.
+            using AddressableMemory::set_word;
+
+            /// @brief Sets the value of the register, helper wrapper.
             /// @param value Word, New value.
             void set_word(const uint16_t value) noexcept;
+
+            /// @brief Increments and sets register value with given value
+            /// @param value Value to increment with
+            void increment(const uint16_t value) noexcept;
+
+            /// @brief Decrements and sets register value with given value
+            /// @param value Value to decrement with
+            void decrement(const uint16_t value);
     };
 
 }//namespace_mygbc

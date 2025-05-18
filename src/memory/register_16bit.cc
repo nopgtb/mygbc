@@ -79,8 +79,36 @@ namespace mygbc{
         const uint16_t second_byte_addr = 1;
         
         const uint8_t * byte_ptr = reinterpret_cast<const uint8_t*>(&value);
-        memory_[first_byte_addr] = byte_ptr[1];
-        memory_[second_byte_addr] = byte_ptr[0];
+        memory_[first_byte_addr] = byte_ptr[second_byte_addr];
+        memory_[second_byte_addr] = byte_ptr[first_byte_addr];
+    }
+
+    /// @brief Increments and sets register value with given value
+    /// @param value Value to increment with
+    void Register16Bit::increment(const uint16_t value) noexcept{
+        std::unique_lock<std::shared_mutex> write_lock(*memory_mutex_);
+        const uint16_t byte_one_addr = 0;
+        const uint16_t byte_two_addr = 1;
+        uint16_t reg_val = (static_cast<uint16_t>(memory_[byte_two_addr]) << 8) | static_cast<uint16_t>(memory_[byte_one_addr]);
+        reg_val = Util::nthos16_t(reg_val);
+        reg_val += value;
+        const uint8_t * byte_ptr = reinterpret_cast<const uint8_t*>(&reg_val);
+        memory_[byte_one_addr] = byte_ptr[byte_two_addr];
+        memory_[byte_two_addr] = byte_ptr[byte_one_addr];
+    }
+
+    /// @brief Decrements and sets register value with given value
+    /// @param value Value to decrement with
+    void Register16Bit::decrement(const uint16_t value){
+        std::unique_lock<std::shared_mutex> write_lock(*memory_mutex_);
+        const uint16_t byte_one_addr = 0;
+        const uint16_t byte_two_addr = 1;
+        uint16_t reg_val = (static_cast<uint16_t>(memory_[byte_two_addr]) << 8) | static_cast<uint16_t>(memory_[byte_one_addr]);
+        reg_val = Util::nthos16_t(reg_val);
+        reg_val -= value;
+        const uint8_t * byte_ptr = reinterpret_cast<const uint8_t*>(&reg_val);
+        memory_[byte_one_addr] = byte_ptr[byte_two_addr];
+        memory_[byte_two_addr] = byte_ptr[byte_one_addr];
     }
 
 }//namespace_mygbc

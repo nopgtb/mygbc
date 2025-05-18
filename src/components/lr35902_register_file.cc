@@ -15,8 +15,6 @@ namespace mygbc{
             {"B", &b_c}, {"C", &b_c}, {"BC", &b_c},
             {"D", &d_e}, {"E", &d_e}, {"DE", &d_e},
             {"H", &h_l}, {"L", &h_l}, {"HL", &h_l},
-            {"IR", &ir_ie},
-            {"IE", &ir_ie},
             {"PC", &pc},
             {"SP", &sp}
         };
