@@ -179,6 +179,22 @@ namespace mygbc{
         /// @param other 
         /// @return are the structs a match data wise?
         bool operator==(const InstructionLR35902& other) const noexcept;
+
+        /// @brief Helper to get the 8-bit unsiged read value.
+        /// @return returns read value as a 8-bit unsigned value.
+        uint8_t unsigned_8brv() const;
+
+        /// @brief Helper to get the 8-bit siged read value.
+        /// @return returns read value as a 8-bit siged value.
+        int8_t signed_8brv() const;
+
+        /// @brief Helper to get the 16-bit unsigned read value.
+        /// @return returns read value as a 16-bit unsigned value.
+        uint16_t unsigned_16brv() const;
+
+        /// @brief Helper to get the 16-bit signed read value.
+        /// @return returns read value as a 16-bit siged value.
+        int16_t signed_16brv() const;
     };
 
 }//namespace_mygbc

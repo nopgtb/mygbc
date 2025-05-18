@@ -130,4 +130,28 @@ namespace mygbc{
         return (opcode == other.opcode);
     }
 
+    /// @brief Helper to get the 8-bit unsiged read value.
+    /// @return returns read value as a 8-bit unsigned value.
+    uint8_t InstructionLR35902::unsigned_8brv() const{
+        return static_cast<uint8_t>(read_value);
+    }
+
+    /// @brief Helper to get the 8-bit siged read value.
+    /// @return returns read value as a 8-bit signed value.
+    int8_t InstructionLR35902::signed_8brv() const{
+        return static_cast<int8_t>(read_value);
+    }
+
+    /// @brief Helper to get the 16-bit usigned read value.
+    /// @return returns read value as a 16-bit unsigned value.
+    uint16_t InstructionLR35902::unsigned_16brv() const{
+        return read_value;
+    }
+
+    /// @brief Helper to get the 16-bit signed read value.
+    /// @return returns read value as a 16-bit siged value.
+    int16_t InstructionLR35902::signed_16brv() const{
+        return static_cast<int16_t>(read_value);
+    }
+
 }//namespace_mygbc
